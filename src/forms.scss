@@ -1,0 +1,136 @@
+@import './vars.scss';
+
+.FormTitle {
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: 0em;
+  text-align: center;
+  color: $label-color;
+  margin: 0;
+  padding: 0;
+}
+
+.FormFieldList {
+  list-style: none;
+  margin: 21px 0 0;
+  padding: 0;
+}
+.FormField {
+  padding: 0 0 12px;
+}
+.ArticleForm .FormField {
+  padding-bottom: 21px;
+}
+.FormField:last-of-type {
+  padding-bottom: 0;
+}
+
+.Label {
+  display: block;
+}
+.InputControl, .TextareaControl {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  margin: 2px 0;
+  border: 1px solid $border-color;
+  border-radius: 3px;
+
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: $text-color;
+  outline: none;
+  transition: .3s border-color ease;
+}
+.TextareaControl {
+  height: 152px;
+}
+.InputControl::placeholder, .TextareaControl::placeholder {
+  color: $placeholder-color;
+}
+.InputControl:focus, .TextareaControl:focus {
+  border-color: $text-color-secondary;
+}
+
+
+
+.FieldNote {
+  color: $placeholder-color;
+  font-size: 13px;
+  line-height: 1;
+  display: none;
+}
+.FieldNote.Show {
+  display: block;
+}
+.FieldNote.Error {
+  color: $error-color;
+}
+.InputControl.Error, .TextareaControl.Error {
+  border-color: $error-color;
+}
+
+.HRule {
+  border-top: 1px solid $hr-line-color;
+  padding-top: 8px;
+  margin-top: 9px;
+}
+
+.WithCheck {
+  position: relative;
+  padding-left: 24px;
+  color: $modal-flytip-color;
+}
+.WithCheck .CheckboxControl {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  left: 0;
+  margin: 0;
+}
+
+.SubmitButton {
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+  padding: 8px 0;
+  border-radius: 3px;
+  color: $color-base;
+  background-color: $daybreak;
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+.ArticleForm .SubmitButton {
+  width: 437px;
+  margin-top: 0;
+}
+.SubmitButton:hover, .SubmitButton:active, .SubmitButton:focus {
+  opacity: .9;
+}
+
+.FootNote {
+  display: block;
+  font-family: 'Roboto', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  text-align: center;
+  color: $footnote-form-color;
+  margin-top: 8px;
+}
+.ArticleForm .FootNote {
+  text-align: left;
+}
+.FootNote a {
+  color: $daybreak;
+  text-decoration: none;
+}

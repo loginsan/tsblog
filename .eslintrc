@@ -80,6 +80,12 @@
     "react/jsx-one-expression-per-line": "off",
     "react/jsx-wrap-multilines": "off",
     "react/destructuring-assignment": "off",
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "assert": "either"
+      }
+    ],
     "@typescript-eslint/comma-dangle": [
       "error",
       {

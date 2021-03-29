@@ -1,0 +1,129 @@
+@import "../vars.scss";
+
+
+body {
+  background-color: $bg-color;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.App {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.App-header {
+  background-color: $color-base;
+  height: 80px;
+  padding: 0 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: $heading-color;
+}
+
+.AppTitle {
+  font-size: 18px;
+  line-height: 28px;
+  font-weight: normal;
+}
+.AppTitle a {
+  text-decoration: none;
+  color: $heading-color;
+  outline: none;
+}
+.AppTitle a:hover, .AppTitle a:active, .AppTitle a:focus,
+.SignInLink:hover, .SignInLink:active, .SignInLink:focus,
+.EditProfileLink:hover, .EditProfileLink:active, .EditProfileLink:focus {
+  color: $text-color-secondary;
+}
+
+.SignInLink, .SignUpLink, .LogOutLink, .EditProfileLink {
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 28px;
+  display: inline-block;
+  padding: 5px 18px;
+  outline: none;
+}
+
+.SignInLink {
+  color: $heading-color;
+}
+
+.SignUpLink {
+  color: $success-color;
+  border: 1px solid $success-color;
+  border-radius: 4px;
+  margin-left: 19px;
+}
+.SignUpLink:hover, .SignUpLink:active, .SignUpLink:focus,
+.NewArticleLink:hover, .NewArticleLink:active, .NewArticleLink:focus,
+.LogOutLink:hover, .LogOutLink:active, .LogOutLink:focus {
+  color: $text-color-secondary;
+  border-color: $text-color-secondary;
+  background-color: #F8F8F8;
+  transition: .3s all ease;
+}
+
+.NewArticleLink {
+  color: $success-color;
+  text-decoration: none;
+  border: 1px solid $success-color;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 22px;
+  padding: 5px 10px;
+  outline: none;
+  margin-left: 9px;
+}
+
+.LogOutLink {
+  color: $text-color;
+  border: 1px solid $text-color;
+  border-radius: 4px;
+  margin-left: 9px;
+}
+
+.EditProfileLink {
+  color: $heading-color;
+  margin-left: 9px;
+  display: inline-flex;
+  align-items: center;
+}
+.EditProfileLink .Avatar {
+  margin-left: 13px;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.AppMain {
+  padding-top: 26px;
+}
+
+
+.PageContent {
+  max-width: 941px;
+  margin: 0 auto 32px;
+  box-sizing: border-box;
+  padding: 15px 15px 24px 19px;
+  background-color: $color-base;
+  filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+.FormContent {
+  max-width: 384px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 32px;
+  background-color: $color-base;
+  border: 1px solid $border-color;
+  box-shadow: 0px 22px 106px rgba(0, 0, 0, 0.07), 0px 9.19107px 44.2843px rgba(0, 0, 0, 0.0503198), 0px 4.91399px 23.6765px rgba(0, 0, 0, 0.0417275), 0px 2.75474px 13.2728px rgba(0, 0, 0, 0.035), 0px 1.46302px 7.04911px rgba(0, 0, 0, 0.0282725), 0px 0.608796px 2.93329px rgba(0, 0, 0, 0.0196802);
+  border-radius: 6px;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+}

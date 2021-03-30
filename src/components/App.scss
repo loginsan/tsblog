@@ -122,10 +122,169 @@ body {
 .PageContent {
   max-width: 941px;
   margin: 0 auto 32px;
+  
+}
+
+.ArticleFull, .ArticleShort {
   box-sizing: border-box;
   padding: 15px 15px 24px 19px;
   background-color: $color-base;
   filter: drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+.ArticleFull {
+  color: $text-color;
+}
+.ArticleShort {
+  border-radius: 2px 5px 5px 2px;
+}
+
+.ArticleHead {
+  display: flex;
+  justify-content: space-between;
+  width: 100%; /* 941px all, 907 == 100% */
+}
+.ArticleInfo {
+  width: 77%;
+}
+.PubInfo {
+  width: 22%;
+}
+
+
+.ArticleInfo h2 {
+  margin: 0 0 6px 0;
+  padding: 0;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+}
+.ArticleTitle {
+  display: inline-block;
+  font-size: 20px;
+  line-height: 28px;
+  text-decoration: none;
+  color: $info-color;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 90%;
+}
+.Like, .Like__Unset:hover {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: $text-color;
+  font-size: 12px;
+  line-height: 22px;
+  margin-left: 13px;
+  padding-left: 21px;
+  background: transparent url(./like-solid.svg) 0 50% no-repeat;
+  background-size: 16px 14px;
+}
+.Like__Unset {
+  background-image: url(./like-outline.svg);
+}
+
+.ArticleTagList {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+}
+.Tag {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 12px;
+  line-height: 15px;
+}
+.Tag a {
+  text-decoration: none;
+  color: $text-color-secondary;
+  display: block;
+  padding: 2px 6px 3px 5px;
+  border: 1px solid $text-color-secondary;
+  border-radius: 2px
+}
+.Tag__Main a {
+  color: $text-color;
+  border-color: $text-color;
+}
+.ArticleExcerpt {
+  color: $text-color;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  line-height: 22px;
+}
+.ArticleFull .ArticleExcerpt {
+  color: $text-color-secondary;
+}
+
+.PubInfo {
+  text-align: right;
+}
+.Author {
+  color: $heading-color;
+  margin-left: 9px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.Author .Avatar {
+  margin-left: 13px;
+}
+.Author span {
+  text-align: right;
+  color: $heading-color;
+  font-size: 18px;
+
+}
+.Author .PubDate {
+  display: block;
+  color: $text-color-secondary;
+  font-size: 12px;
+
+}
+
+
+.ArticleMarkdown {
+  font-size: 14px;
+  line-height: 22px;
+  color: $text-color;
+  margin-top: 24px;
+}
+.ArticleMarkdown h5, .ArticleMarkdown h6 {
+  font-weight: 400;
+  padding: 0;
+}
+.ArticleMarkdown h5 {
+  font-size: 20px;
+  line-height: 28px;
+  margin: 0 0 2px;
+}
+.ArticleMarkdown h6 {
+  font-size: 18px;
+  line-height: 28px;
+  margin: 0;
+}
+.ArticleMarkdown p {
+  margin: 0 0 24px;
+  padding: 0;
+}
+.ArticleMarkdown a {
+  color: $info-color;
+}
+.ArticleMarkdown a:hover {
+  text-decoration: none;
+}
+.ArticleMarkdown ol {
+  margin: 0 0 24px;
+  padding: 0 0 0 18px;
+}
+
+
+.hide {
+  display: none;
 }
 
 .FormContent {

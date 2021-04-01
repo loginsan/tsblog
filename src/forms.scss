@@ -1,6 +1,6 @@
 @import './vars.scss';
 
-.FormTitle {
+.form__title {
   font-family: 'Roboto', Arial, sans-serif;
   font-size: 20px;
   font-style: normal;
@@ -13,25 +13,28 @@
   padding: 0;
 }
 
-.FormFieldList {
+.form__field-list {
   list-style: none;
   margin: 21px 0 0;
   padding: 0;
 }
-.FormField {
+
+.form__field {
   padding: 0 0 12px;
 }
-.ArticleForm .FormField {
+
+.form_article .form__field {
   padding-bottom: 21px;
 }
-.FormField:last-of-type {
+.form__field:last-of-type {
   padding-bottom: 0;
 }
 
-.Label {
+.label {
   display: block;
 }
-.InputControl, .TextareaControl {
+
+.control {
   width: 100%;
   box-sizing: border-box;
   padding: 8px 12px;
@@ -46,46 +49,50 @@
   outline: none;
   transition: .3s border-color ease;
 }
-.TextareaControl {
+.control_textarea {
   height: 152px;
 }
-.InputControl::placeholder, .TextareaControl::placeholder {
+.control_tag {
+  width: 300px;
+  margin-bottom: 0;
+}
+.control::placeholder {
   color: $placeholder-color;
 }
-.InputControl:focus, .TextareaControl:focus {
+.control:focus {
   border-color: $text-color-secondary;
 }
 
 
 
-.FieldNote {
+.note_field {
   color: $placeholder-color;
   font-size: 13px;
   line-height: 1;
   display: none;
 }
-.FieldNote.Show {
+.note_field.show {
   display: block;
 }
-.FieldNote.Error {
+.note_field.error {
   color: $error-color;
 }
-.InputControl.Error, .TextareaControl.Error {
+.control.error {
   border-color: $error-color;
 }
 
-.HRule {
+.h-rule {
   border-top: 1px solid $hr-line-color;
   padding-top: 8px;
   margin-top: 9px;
 }
 
-.WithCheck {
+.with-check {
   position: relative;
   padding-left: 24px;
   color: $modal-flytip-color;
 }
-.WithCheck .CheckboxControl {
+.with-check .control_checkbox {
   position: absolute;
   z-index: 1;
   top: 4px;
@@ -93,7 +100,7 @@
   margin: 0;
 }
 
-.SubmitButton {
+.btn_submit {
   width: 100%;
   height: 40px;
   margin-top: 10px;
@@ -108,16 +115,20 @@
   text-align: center;
   border: none;
   outline: none;
+  cursor: pointer;
+  transition: 0.3s all ease;
 }
-.ArticleForm .SubmitButton {
+.form_article .btn_submit {
   width: 437px;
   margin-top: 0;
 }
-.SubmitButton:hover, .SubmitButton:active, .SubmitButton:focus {
+.btn_submit:hover, .btn_submit:active, .btn_submit:focus {
   opacity: .9;
+  letter-spacing: 2px;
+  
 }
 
-.FootNote {
+.note_foot {
   display: block;
   font-family: 'Roboto', Arial, sans-serif;
   font-size: 12px;
@@ -127,10 +138,62 @@
   color: $footnote-form-color;
   margin-top: 8px;
 }
-.ArticleForm .FootNote {
+.form_article .note_foot {
   text-align: left;
 }
-.FootNote a {
+.note_foot a {
   color: $daybreak;
   text-decoration: none;
+}
+.note_foot a:hover, .note_foot a:focus {
+  text-decoration: underline;
+}
+
+.tags-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag-line {
+  margin-bottom: 3px;
+}
+
+.btn_tag {
+  font-size: 15px;
+  line-height: 24px;
+  display: inline-block;
+  padding: 8px 18px;
+  outline: none;
+  color: $text-color;
+  background-color: $color-base;
+  border: 1px solid $text-color;
+  border-radius: 3px;
+  margin-left: 17px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: 0.3s all ease;
+}
+
+.btn_delete {
+  width: 120px;
+  color: $error-color;
+  border-color: $error-color;
+}
+.btn_delete:hover, .btn_delete:focus {
+  color: $color-base;
+  background-color: rgba($error-color, .7);
+  letter-spacing: 2px;
+}
+.btn_add {
+  width: 136px;
+  color: $info-color;
+  border-color: $info-color;
+}
+.btn_add:hover, .btn_add:focus {
+  background-color: rgba($info-color, .2);
+  letter-spacing: 2px;
+}
+.tag-line:not(:last-of-type) .btn_add {
+  display: none;
 }

@@ -29,99 +29,220 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="App">
-        <header className="App-header">
-          <h1 className="AppTitle">
+      <div className="app">
+        <header className="app-header">
+          <h1 className="app-title">
             <NavLink to="/">Realworld Blog</NavLink>
           </h1>
-          <UserMenu isLogged={true} />
+          <UserMenu isLogged={false} />
         </header>
 
-        <main className="AppMain">
-          <section className="PageContent">
-            <article className="Article ArticleShort">
+        <main className="app-main">
+          <section className="form">
+  <h2 className="form__title">Create new account</h2>
+  <ul className="form__field-list">
+    <li className="form__field">
+      <label className="label" htmlFor="username1">
+        Username
+      </label>
+      <input
+        className="control control_input"
+        type="text"
+        id="username1"
+        name="username"
+        placeholder="Username"
+        value={fields.username}
+        onChange={(evt) => handleChange(evt, 'username')}
+      />
+      <span className="note_field error">
+        Пользователь с таким именем уже есть
+      </span>
+      <span className="note_field show">Use A-Za-z0-9_ characters</span>
+    </li>
+    <li className="form__field">
+      <label className="label" htmlFor="email">
+        Email address
+      </label>
+      <input
+        className="control control_input"
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Email address"
+        value={fields.email}
+        onChange={(evt) => handleChange(evt, 'email')}
+      />
+      <span className="note_field error">
+        Неверный формат электронной почты
+      </span>
+      <span className="note_field">1</span>
+    </li>
+    <li className="form__field">
+      <label className="label" htmlFor="password">
+        Password
+      </label>
+      <input
+        className="control control_input error"
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Password"
+        value={fields.password}
+        onChange={(evt) => handleChange(evt, 'password')}
+      />
+      <span className="note_field error show">
+        Your password needs to be at least 8 characters
+      </span>
+      <span className="note_field">2</span>
+    </li>
+    <li className="form__field">
+      <label className="label" htmlFor="repeatpassword">
+        Repeat Password
+      </label>
+      <input
+        className="control control_input error"
+        type="password"
+        id="repeatpassword"
+        name="repeatpassword"
+        placeholder="Password"
+        value={fields.repeatpassword}
+        onChange={(evt) => handleChange(evt, 'repeatpassword')}
+      />
+      <span className="note_field error show">Passwords must match</span>
+      <span className="note_field">3</span>
+    </li>
+    <li className="form__field h-rule">
+      <label className="label with-check" htmlFor="agreement">
+        <input
+          className="control_checkbox"
+          type="checkbox"
+          id="agreement"
+          name="agreement"
+          onChange={() => {}}
+          checked
+        />
+        I agree to the processing of my personal information
+      </label>
+    </li>
+    <li className="form__field">
+      <button type="submit" className="btn_submit">
+        Create
+      </button>
+      <span className="note_foot">
+        Already have an account? <a href="/sign-in">Sign In</a>.
+      </span>
+    </li>
+  </ul>
+</section>
 
-              <header className="ArticleHead">
-                <div className="ArticleInfo">
-                  <h2>
-                    <a className="ArticleTitle" href="/">How about a real very very long creative unique awesome clickbate superb article title?</a>
-                    <a href="/sign-in" className="Like Like__Unset">0</a>
-                  </h2>
-                  <ul className="ArticleTagList">
-                    <li className="Tag Tag__Main"><a href="/">React</a></li>
-                    <li className="Tag"><a href="/">JS</a></li>
-                    <li className="Tag"><a href="/">TypeScript</a></li>
-                  </ul>
-                  <p className="ArticleExcerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                </div>
-                <aside className="PubInfo">
-                  <Link to="/profile" className="Author" title="Author">
-                    <span>
-                      John Doe
-                      <time className="PubDate">March 5, 2020</time>
-                    </span>
-                    <img src={profileAvatar} alt="Avatar" className="Avatar" />
-                  </Link>
-                </aside>
-              </header>
 
-            </article>
-          </section>
-
-          <section className="PageContent">
-            <article className="Article ArticleFull">
-
-              <header className="ArticleHead">
-                <div className="ArticleInfo">
-                  <h2>
-                    <a className="ArticleTitle" href="/">Ta da</a>
-                    <a href="/sign-in" className="Like Like__Unset">0</a>
-                  </h2>
-                  <ul className="ArticleTagList">
-                    <li className="Tag Tag__Main"><a href="/">React</a></li>
-                    <li className="Tag"><a href="/">JS</a></li>
-                    <li className="Tag"><a href="/">TypeScript</a></li>
-                  </ul>
-                  <p className="ArticleExcerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                </div>
-                <aside className="PubInfo">
-                  <Link to="/profile" className="Author" title="Author">
-                    <span>
-                      John Doe
-                      <time className="PubDate">March 5, 2020</time>
-                    </span>
-                    <img src={profileAvatar} alt="Avatar" className="Avatar" />
-                  </Link>
-                  
-                  <div className="EditLinks hide">
-                    <a href="/" className="DeleteArticleLink">Delete</a>
-                    <a href="/" className="EditArticleLink">Edit</a>
-                    <div className="ConfirmDeleteFlyBox">
-                      <span>Are you sure to delete this article?</span>
-                      <button type="button" className="btn">No</button>
-                      <button type="button" className="btn btn-primary">Yes</button>
-                    </div>
-                  </div>
-                </aside>
-              </header>
-              <main className="ArticleMarkdown">
-                <h5>Est Ampyciden pater patent</h5>
-                <h6>Amor saxa inpiger</h6>
-                <p>Lorem markdownum Stygias neque is referam fudi, breve per. Et Achaica tamen: nescia ista occupat, illum se ad potest humum et.</p>
-                <h6>Qua deos has fontibus</h6>
-                <p>Recens nec ferro responsaque dedere armenti opes momorderat pisce, vitataque et fugisse. Et iamque incipiens, qua huius suo omnes ne pendentia citus pedum.</p>
-                <h6>Quamvis pronuba</h6>
-                <p>Ulli labore facta. Io cervis non nosterque nullae, vides: aethere Delphice subit, tamen <a href="/">Romane ob cubilia Rhodopen calentes</a> librata! Nihil populorum flava, inrita? Sit hic nunc, hoc formae Esse illo? Umeris eram similis, crudelem de est relicto ingemuit finiat Pelia uno cernunt Venus draconem, hic, Methymnaeae.</p>
-                <ol>
-                  <li>Clamoribus haesit tenentem iube Haec munera</li>
-                  <li>Vincla venae</li>
-                  <li>Paris includere etiam tamen</li>
-                  <li>Superi te putria imagine Deianira</li>
-                  <li>Tremore hoste Esse sed perstat capillis siqua</li>
-                </ol>
-              </main> 
-            </article>
-          </section>
+<section className="form form_article">
+  <h2 className="form__title">Create new article</h2>
+  <ul className="form__field-list">
+    <li className="form__field">
+      <label className="label" htmlFor="title">
+        Title
+      </label>
+      <input
+        className="control control_input"
+        type="text"
+        id="title"
+        name="title"
+        placeholder="Title"
+        value={fields.username}
+        onChange={(evt) => handleChange(evt, 'username')}
+      />
+      <span className="note_field error">
+        Пользователь с таким именем уже есть
+      </span>
+      <span className="note_field">Use A-Za-z0-9_ characters</span>
+    </li>
+    <li className="form__field">
+      <label className="label" htmlFor="short">
+        Short description
+      </label>
+      <input
+        className="control control_input"
+        type="text"
+        id="short"
+        name="short"
+        placeholder="Short description"
+        value={fields.email}
+        onChange={(evt) => handleChange(evt, 'email')}
+      />
+      <span className="note_field error">
+        Неверный формат электронной почты
+      </span>
+      <span className="note_field">1</span>
+    </li>
+    <li className="form__field">
+      <label className="label" htmlFor="text">
+        Text
+      </label>
+      <textarea
+        className="control control_textarea error"
+        id="text"
+        name="text"
+        cols={30}
+        rows={5}
+        placeholder="Text with Markdown"
+        defaultValue="&nbsp;"
+      />        
+      <span className="note_field error show">
+        Your text needs to be at least 80 characters
+      </span>
+      <span className="note_field">2</span>
+    </li>
+    <li className="form__field">
+      <label className="label" htmlFor="tag_main">
+        Tags
+      </label>
+      <ul className="tags-list">
+        <li className="tag-line">
+          <input
+            className="control control_input control_tag"
+            type="text"
+            id="tag_main"
+            name="tag_main"
+            placeholder="Tag"
+          />
+          <button type="button" className="btn_delete btn_tag">
+            Delete
+          </button>
+          <button type="button" className="btn_add btn_tag">
+            Add Tag
+          </button>
+        </li>
+        <li className="tag-line">
+          <input
+            className="control control_input control_tag"
+            type="text"
+            id="tag_next"
+            name="tag_next"
+            placeholder="Tag"
+          />
+          <button type="button" className="btn_delete btn_tag">
+            Delete
+          </button>
+          <button type="button" className="btn_add btn_tag">
+            Add Tag
+          </button>
+        </li>
+      </ul>
+      
+      <span className="note_field error">Passwords must match</span>
+      <span className="note_field">3</span>
+    </li>
+    <li className="form__field">
+      <button type="submit" className="btn_submit">
+        Send
+      </button>
+      <span className="note_foot">
+        * All changes are saved.
+      </span>
+    </li>
+  </ul>
+</section>
           
         </main>
       </div>

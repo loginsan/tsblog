@@ -127,6 +127,7 @@ body {
 .article__info {
   width: 77%;
 }
+
 .pub-info {
   width: 22%;
   text-align: right;
@@ -169,9 +170,7 @@ body {
 }
 
 .article__tag-list {
-  list-style: none;
   margin: 0 0 8px;
-  padding: 0;
 }
 .tag {
   display: inline-block;
@@ -374,6 +373,11 @@ body {
 
 .hide {
   display: none;
+}
+
+.nolist {
+  list-style: none;
+  padding: 0;
 }
 
 .form {

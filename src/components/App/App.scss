@@ -1,5 +1,5 @@
-@import '../vars.scss';
-@import '../forms.scss';
+@import '../../vars.scss';
+@import '../../forms.scss';
 
 body {
   background-color: $bg-color;
@@ -9,7 +9,8 @@ body {
 
 .app {
   max-width: 1440px;
-  margin: 0 auto 50px;
+  margin: 0 auto;
+  padding-bottom: 50px;
 }
 
 .app-header {
@@ -39,6 +40,18 @@ body {
   color: $text-color-secondary;
 }
 
+.loading {
+  margin: 32px auto;
+  font-size: 2rem;
+  text-align: center;
+  color: $info-color;
+}
+
+.alert-box {
+  max-width: 941px;
+  margin: 0 auto 32px;
+  background-color: $base-color;
+}
 
 .link {
   display: inline-block;
@@ -117,6 +130,7 @@ body {
 }
 .article_short {
   border-radius: 2px 5px 5px 2px;
+  margin-bottom: 26px;
 }
 
 .article__head {
@@ -125,11 +139,11 @@ body {
   width: 100%; /* 941px all, 907 == 100% */
 }
 .article__info {
-  width: 77%;
+  width: 75%;
 }
 
 .pub-info {
-  width: 22%;
+  width: 25%;
   text-align: right;
 }
 
@@ -151,7 +165,18 @@ body {
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 90%;
+  transition: .1s color ease;
 }
+.article__title:hover, .article__title:focus {
+  color: darken($info-color, 25);
+}
+
+.article_img {
+  max-width: 100%;
+  max-height: 130px;
+  margin-bottom: 12px;
+}
+
 .like, .like_unset:hover {
   display: inline-flex;
   align-items: center;
@@ -161,7 +186,7 @@ body {
   line-height: 22px;
   margin-left: 13px;
   padding-left: 21px;
-  background: transparent url(./like.svg) 0 -29px no-repeat;
+  background: transparent url(../../assets/like.svg) 0 -29px no-repeat;
   background-size: 16px 48px;
   transition: .3s background-position ease;
 }
@@ -184,11 +209,16 @@ body {
   display: block;
   padding: 2px 6px 3px 5px;
   border: 1px solid $text-color-secondary;
-  border-radius: 2px
+  border-radius: 2px;
+  transition: none;
 }
 .tag_main a {
   color: $text-color;
   border-color: $text-color;
+}
+.tag a:hover, .tag a:focus {
+  background-color: $text-color;
+  color: $base-color;
 }
 
 .article__excerpt {
@@ -211,11 +241,14 @@ body {
 }
 .author .avatar {
   margin-left: 13px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
 }
 .author span {
   text-align: right;
   color: $heading-color;
-  font-size: 18px;
+  font-size: 17px;
 
 }
 .author .pub-date {
@@ -401,4 +434,47 @@ body {
 
 .form_article {
   max-width: 938px;
+}
+
+.ant-pagination {
+  text-align: center;
+}
+.ant-pagination-item {
+  min-width: 26px;
+  height: 26px;
+}
+.ant-pagination-item, 
+.ant-pagination-prev .ant-pagination-item-link, 
+.ant-pagination-next .ant-pagination-item-link {
+  background-color: transparent;
+  border: none;
+  font-size: 14px;
+  line-height: 24px;
+  transition: none;
+}
+.ant-pagination-item:hover, .ant-pagination-item:focus {
+  background-color: $border-color;
+}
+.ant-pagination-item a {
+  color: $text-color;
+}
+.ant-pagination-item-active {
+  background-color: $info-color;
+  border-radius: 4px;
+  font-weight: 400;
+  transition: none;
+}
+.ant-pagination-item-active a {
+  color: $base-color;
+  transition: none;
+}
+.ant-pagination-item-active:hover {
+  background-color: $info-color;
+  opacity: .8;
+}
+.ant-pagination-item-active a:hover, .ant-pagination-item-active a:focus {
+  color: $base-color;
+}
+.ant-pagination-item:focus-visible, .ant-pagination-item:hover {
+  transition: none;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const EditArticle: React.FC = () => {
+const NewArticle: React.FC = () => {
   
   const [article, setArticle] = useState({
     title: '',
@@ -20,7 +20,7 @@ const EditArticle: React.FC = () => {
 
   return (
     <section className="form form_article">
-      <h2 className="form__title">Edit article</h2>
+      <h2 className="form__title">Create new article</h2>
       <ul className="form__field-list nolist">
         <li className="form__field">
           <label className="label" htmlFor="title">
@@ -36,8 +36,9 @@ const EditArticle: React.FC = () => {
             onChange={(evt) => handleChange(evt, 'title')}
           />
           <span className="note_field error">
-            Title can't be empty
+            Пользователь с таким именем уже есть
           </span>
+          <span className="note_field">Use A-Za-z0-9_ characters</span>
         </li>
         <li className="form__field">
           <label className="label" htmlFor="short">
@@ -128,4 +129,4 @@ const EditArticle: React.FC = () => {
   );
 }
 
-export default EditArticle;
+export default NewArticle;

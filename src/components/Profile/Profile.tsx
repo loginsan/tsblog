@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 
-const SignUp: React.FC = () => {
+const Profile: React.FC = () => {
 
   const [fields, setFields] = useState({
     username: '',
     email: '',
     password: '',
-    repeatpassword: ''
+    bio: '',
+    avatar: '',
   });
 
   const handleChange = (
@@ -21,7 +21,7 @@ const SignUp: React.FC = () => {
 
   return (
     <section className="form">
-    <h2 className="form__title">Create new account</h2>
+    <h2 className="form__title">Edit Profile</h2>
     <ul className="form__field-list nolist">
       <li className="form__field">
         <label className="label" htmlFor="username1">
@@ -33,13 +33,14 @@ const SignUp: React.FC = () => {
           id="username1"
           name="username"
           placeholder="Username"
+          autoComplete="off"
           value={fields.username}
           onChange={(evt) => handleChange(evt, 'username')}
         />
         <span className="note_field error">
           Пользователь с таким именем уже есть
         </span>
-        <span className="note_field show">Use A-Za-z0-9_ characters</span>
+        <span className="note_field">Use A-Za-z0-9_ characters</span>
       </li>
       <li className="form__field">
         <label className="label" htmlFor="email">
@@ -51,6 +52,7 @@ const SignUp: React.FC = () => {
           id="email"
           name="email"
           placeholder="Email address"
+          autoComplete="off"
           value={fields.email}
           onChange={(evt) => handleChange(evt, 'email')}
         />
@@ -64,7 +66,7 @@ const SignUp: React.FC = () => {
           Password
         </label>
         <input
-          className="control control_input error"
+          className="control control_input"
           type="password"
           id="password"
           name="password"
@@ -72,49 +74,57 @@ const SignUp: React.FC = () => {
           value={fields.password}
           onChange={(evt) => handleChange(evt, 'password')}
         />
-        <span className="note_field error show">
-          Your password needs to be at least 8 characters
+        <span className="note_field error">
+          Wrong password
         </span>
         <span className="note_field">2</span>
       </li>
       <li className="form__field">
-        <label className="label" htmlFor="repeatpassword">
-          Repeat Password
+        <label className="label" htmlFor="bio">
+          Bio
         </label>
-        <input
-          className="control control_input error"
-          type="password"
-          id="repeatpassword"
-          name="repeatpassword"
-          placeholder="Password"
-          value={fields.repeatpassword}
-          onChange={(evt) => handleChange(evt, 'repeatpassword')}
-        />
-        <span className="note_field error show">Passwords must match</span>
-        <span className="note_field">3</span>
-      </li>
-      <li className="form__field h-rule">
-        <label className="label with-check" htmlFor="agreement">
-          <input
-            className="control_checkbox"
-            type="checkbox"
-            id="agreement"
-            name="agreement"
-          />
-          I agree to the processing of my personal information
-        </label>
+        <textarea
+          className="control control_textarea"
+          id="bio"
+          name="bio"
+          cols={30}
+          rows={5}
+          placeholder="Bio"
+          defaultValue="&nbsp;"
+        />        
+        <span className="note_field error">
+          Your text needs to be at least 80 characters
+        </span>
+        <span className="note_field">2</span>
       </li>
       <li className="form__field">
-        <button type="submit" className="btn_submit">
-          Create
-        </button>
-        <span className="note_foot">
-          Already have an account? <Link to="/sign-in">Sign In</Link>.
+        <label className="label" htmlFor="avatar">
+          Avatar image (url)
+        </label>
+        <input
+          className="control control_input"
+          type="text"
+          id="avatar"
+          name="avatar"
+          placeholder="Avatar image"
+          autoComplete="off"
+          value={fields.avatar}
+          onChange={(evt) => handleChange(evt, 'avatar')}
+        />
+        <span className="note_field error">
+          Something odd…
         </span>
+        <span className="note_field">4</span>
+      </li>
+      
+      <li className="form__field">
+        <button type="submit" className="btn_submit">
+          Save
+        </button>
       </li>
     </ul>
   </section>
   )
 };
 
-export default SignUp;
+export default Profile;

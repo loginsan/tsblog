@@ -44,11 +44,16 @@ const ArticleView: React.FC<ArticleViewProps> = () => (
       <main className="article__markdown">
         <h5>Est Ampyciden pater patent</h5>
         <h6>Amor saxa inpiger</h6>
-        <p>Lorem markdownum Stygias neque is referam fudi, breve per. Et Achaica tamen: nescia ista occupat, illum se ad potest humum et.</p>
+        <p>Lorem markdownum Stygias neque is referam fudi, breve per. 
+          Et Achaica tamen: nescia ista occupat, illum se ad potest 
+          humum et.</p>
         <h6>Qua deos has fontibus</h6>
-        <p>Recens nec ferro responsaque dedere armenti opes momorderat pisce, vitataque et fugisse. Et iamque incipiens, qua huius suo omnes ne pendentia citus pedum.</p>
+        <p>Recens nec ferro responsaque dedere armenti opes momorderat pisce, 
+          vitataque et fugisse. Et iamque incipiens, qua huius suo omnes ne 
+          pendentia citus pedum.</p>
         <h6>Quamvis pronuba</h6>
-        <p>Ulli labore facta. Io cervis non nosterque nullae, vides: aethere Delphice subit, tamen <a href="/">Romane ob cubilia Rhodopen calentes</a> librata! Nihil populorum flava, inrita? Sit hic nunc, hoc formae Esse illo? Umeris eram similis, crudelem de est relicto ingemuit finiat Pelia uno cernunt Venus draconem, hic, Methymnaeae.</p>
+        <p>Ulli labore facta. Io cervis non nosterque nullae, vides: aethere 
+          Delphice subit, tamen <a href="/">Romane ob cubilia Rhodopen calentes</a> librata! Nihil populorum flava, inrita? Sit hic nunc, hoc formae Esse illo? Umeris eram similis, crudelem de est relicto ingemuit finiat Pelia uno cernunt Venus draconem, hic, Methymnaeae.</p>
         <ol>
           <li>Clamoribus haesit tenentem iube Haec munera</li>
           <li>Vincla venae</li>

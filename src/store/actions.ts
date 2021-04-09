@@ -1,13 +1,15 @@
 import { Dispatch } from 'react';
 import api from '../services/APIService';
-import { BunchOfArticles } from '../types';
+import { BunchOfArticles, ArticleResponse } from '../types';
 import {
   APPEND_ARTICLES,
   APPEND_ARTICLES_ERROR,
   APPEND_ARTICLES_LOADING,
   SET_CURRENT_PAGE,
   SET_CURRENT_TAG,
-  VIEW_ARTICLE_ID,
+  VIEW_ARTICLE,
+  VIEW_ARTICLE_LOADING,
+  VIEW_ARTICLE_ERROR,
 } from './constants';
 
 
@@ -27,14 +29,24 @@ export interface IArticlesSuccess {
   data: BunchOfArticles, 
 }
 
-interface IArticleView {
-  type: typeof VIEW_ARTICLE_ID,
-  id: string,
-}
-
 export interface IPageNum {
   type: typeof SET_CURRENT_PAGE,
   page: number,
+}
+
+export interface IArticleView {
+  type: typeof VIEW_ARTICLE,
+  data: ArticleResponse,
+}
+
+export interface IArticleLoading {
+  type: typeof VIEW_ARTICLE_LOADING,
+  flag: Boolean,
+}
+
+export interface IArticleError {
+  type: typeof VIEW_ARTICLE_ERROR,
+  error: string,
 }
 
 interface IArticlesTag {
@@ -42,7 +54,10 @@ interface IArticlesTag {
   tag: string | null,
 }
 
-export type ArticlesActionTypes = IArticlesLoading  | IArticlesError | IArticlesSuccess | IPageNum;
+export type ArticlesActionTypes = IArticlesLoading  | 
+  IArticlesError | IArticlesSuccess | IPageNum;
+export type ArticleActionType = IArticleLoading  | IArticleError | IArticleView;
+
 
 // Action Creators
 export const setArticlesLoading = (flag: Boolean): ArticlesActionTypes => ({ 
@@ -55,15 +70,26 @@ export const setArticlesError = (msg: string): ArticlesActionTypes => ({
   error: msg,
 });
 
-export const setArticlesSuccess = (data: BunchOfArticles): ArticlesActionTypes => ({
+export const setArticles = (data: BunchOfArticles): ArticlesActionTypes => ({
   type: APPEND_ARTICLES,
-  data
+  data,
 });
 
-export const viewArticle = (id: string): IArticleView => ({
-  type: VIEW_ARTICLE_ID,
-  id,
-})
+
+export const viewArticle = (data: ArticleResponse): ArticleActionType => ({
+  type: VIEW_ARTICLE,
+  data,
+});
+
+export const viewArticleLoading = (flag: Boolean): ArticleActionType => ({ 
+  type: VIEW_ARTICLE_LOADING, 
+  flag
+});
+
+export const viewArticleError = (msg: string): ArticleActionType => ({ 
+  type: VIEW_ARTICLE_ERROR, 
+  error: msg,
+});
 
 export const setCurrentPage = (num: number): IPageNum => ({ 
   type: SET_CURRENT_PAGE, 
@@ -75,6 +101,7 @@ export const setCurrentTag = (tag: string | null): IArticlesTag => ({
   tag,
 });
 
+// ASYNC ACTIONS
 
 async function loadMoreArticles(
   service: typeof api, 
@@ -85,16 +112,37 @@ async function loadMoreArticles(
   dispatch(setArticlesLoading(true));
   try {
     const data: BunchOfArticles = await service.getArticles(page);
-    dispatch(setArticlesSuccess(data));
+    dispatch(setArticles(data));
   } catch (err) {
     dispatch(setArticlesError(err.message));
   }
-
 }
 
 export function asyncMoreArticles(page: number = 1) {
   return (dispatch: Dispatch<ArticlesActionTypes>) => {
     loadMoreArticles(api, dispatch, page);
+  };
+}
+
+
+async function loadArticle(
+  service: typeof api, 
+  dispatch: Dispatch<ArticleActionType>, 
+  id: string
+) {
+
+  dispatch(viewArticleLoading(true));
+  try {
+    const data: ArticleResponse = await service.getArticle(id);
+    dispatch(viewArticle(data));
+  } catch (err) {
+    dispatch(viewArticleError(err.message));
+  }
+}
+
+export function asyncViewArticle(id: string) {
+  return (dispatch: Dispatch<ArticleActionType>) => {
+    loadArticle(api, dispatch, id);
   };
 }
 

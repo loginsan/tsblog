@@ -10,7 +10,7 @@ export type ProfileType = {
   "username": string,
   "bio": string,
   "image": string,
-  "following": Boolean
+  "following": Boolean,
 }
 
 export type ArticleType = {
@@ -24,6 +24,10 @@ export type ArticleType = {
   "favorited": Boolean,
   "favoritesCount": number,
   "author": ProfileType,
+}
+
+export type ArticleResponse = {
+  "article": ArticleType,
 }
 
 export type BunchOfArticles = {

@@ -65,22 +65,23 @@ body {
   color: $heading-color;
   transition: 0.3s all ease;
 }
-.link:hover, .link:focus {
+a.link:hover, a.link:focus {
   background-color: rgba($placeholder-color, .2);
+  color: unset;
 }
 
-.link_sign-in {
+a.link_sign-in {
   border: 1px solid rgba($text-color, .1);
 }
-.link_sign-up, .link_new-article {
+a.link_sign-up, a.link_new-article {
   color: $success-color;
   border: 1px solid $success-color;
 }
-.link_sign-up {
+a.link_sign-up {
   margin-left: 19px;
 }
-.link_sign-up:hover, .link_sign-up:focus, 
-.link_new-article:hover, .link_new-article:focus {
+a.link_sign-up:hover, a.link_sign-up:focus, 
+a.link_new-article:hover, a.link_new-article:focus {
   background-color: rgba($success-color, .1);
   border-color: rgba($success-color, .6);
 }
@@ -94,8 +95,8 @@ body {
   color: $text-color;
   border: 1px solid $text-color;
 }
-.link_logout:hover, .link_logout:focus,
-.link_sign-in:hover, .link_sign-in:focus {
+a.link_logout:hover, a.link_logout:focus,
+a.link_sign-in:hover, a.link_sign-in:focus {
   border-color: $placeholder-color;
 }
 

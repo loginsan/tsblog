@@ -1,4 +1,4 @@
-import { BunchOfArticles } from "../types";
+import { BunchOfArticles, ArticleResponse } from "../types";
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
@@ -29,6 +29,8 @@ class APIService {
 
   limit: number = 20;
 
+  from: number = 205000;
+
   endURL(endpoint: string, params: string = ''): string {
     const str: string = params? `?${params}` : '';
     const url: string = `${this.base}${endpoint}${str}`;
@@ -42,18 +44,20 @@ class APIService {
   ): Promise<BunchOfArticles> {
     const url: string = this.endURL("/articles", 
       `limit=${this.limit}` + 
-      `&offset=${(page - 1) * this.limit}` +
+      `&offset=${this.from + (page - 1) * this.limit}` +
       `${tag? `&tag=${tag}` : ""}` +
       `${author? `&author=${author}` : ""}`
     );
-    try {
-      const data = await http<BunchOfArticles>(url);
-      return data as BunchOfArticles;
-    } catch (err) {
-      console.log(`catch an error, ${err}`);
-      return { "articles": [], "articlesCount": 0 }
-    }
+    const data = await http<BunchOfArticles>(url);
+    return data as BunchOfArticles;
   }
+
+  async getArticle(slug: string): Promise<ArticleResponse> {
+    const url: string = this.endURL(`/articles/${slug}`);
+    const data = await http<ArticleResponse>(url);
+    return data as ArticleResponse;
+  }
+
 
 }
 

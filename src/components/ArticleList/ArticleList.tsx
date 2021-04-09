@@ -5,26 +5,9 @@ import { Alert, Pagination } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { asyncMoreArticles, setCurrentPage, ArticlesActionTypes } from '../../store/actions';
 import { ArticleType } from '../../types';
-import { IArticlesState } from '../../store/reducers';
+import { IArticlesState } from '../../store/articlesReducer';
+import { formatDate, avatarFallback, randomArticleImage } from '../../common';
 
-
-const formatDate = (dateStr: string, locale: string = "en"): string => {
-  const date = new Date(dateStr);
-  const yy = new Intl.DateTimeFormat(locale, { year: 'numeric' }).format(date);
-  const mm = new Intl.DateTimeFormat(locale, { month: 'long' }).format(date);
-  const dd = new Intl.DateTimeFormat(locale, { day: 'numeric' }).format(date);
-  return `${mm} ${dd}, ${yy}`;
-}
-
-const randomArticleImage = (): React.ReactNode => {
-  const seed = Math.round( Math.random() * 100 + 1);
-  return (
-    <img alt="placeholder" 
-      className="article_img" 
-      src={`https://picsum.photos/seed/${seed}/907/130`} 
-    />
-  )
-}
 
 const renderArticleShort = (props: ArticleType): React.ReactNode => {
   const { slug, title, description, tagList, 
@@ -32,7 +15,7 @@ const renderArticleShort = (props: ArticleType): React.ReactNode => {
   const likeClass: string = `like${favorited? "" : " like_unset"}`;
   return (
   <>
-    <Link to={`/articles/${slug}`}>{ randomArticleImage() }</Link>
+    {/* {<Link to={`/articles/${slug}`}>{ randomArticleImage() }</Link>} */}
     <header className="article__head">
       <div className="article__info">
         <h2>
@@ -56,7 +39,10 @@ const renderArticleShort = (props: ArticleType): React.ReactNode => {
             { author.username }
             <time className="pub-date">{ formatDate(updatedAt) }</time>
           </span>
-          <img src={ author.image } title={ author.bio } alt="Avatar" className="avatar" />
+          <img src={ author.image } title={ author.bio } 
+            alt="Avatar" className="avatar"
+            onError={ avatarFallback }
+          />
         </Link>
       </aside>
     </header>
@@ -88,7 +74,7 @@ const ArticleList: React.FC<IArticleListProps> = ({
     //     console.log(data.articles[0]);
     //   })
     dispatch(asyncMoreArticles(page));
-  }, [page]);
+  }, [dispatch, page]);
 
   const elemLoading = loading && <div className="loading"><LoadingOutlined /></div>;
   const elemAlert = !!error && <Alert className="alert-box" message="Error ocured" description={error} type="error" showIcon />;
@@ -122,7 +108,6 @@ const ArticleList: React.FC<IArticleListProps> = ({
   )
   };
 
-// export default ArticleList;
 const mapStateToProps = (state: {articles: IArticlesState}) => ({
   loading: state.articles.loading, 
   error: state.articles.error,

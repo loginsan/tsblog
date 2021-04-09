@@ -25,10 +25,13 @@ const App: React.FC = () => (
             <Route path="/articles/" exact>
               <ArticleList />
             </Route>
-            <Route path="/articles/:some" exact>
-              <ArticleView />
-            </Route>
-            <Route path="/articles/:some/edit">
+            <Route path="/articles/:slug" exact 
+              render={({ match }) => {
+                const { slug } = match.params;
+                return <ArticleView id={ slug } />
+              }}
+            />
+            <Route path="/articles/:slug/edit">
               <EditArticle />
             </Route>
             <Route path="/new-article">

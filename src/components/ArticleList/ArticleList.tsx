@@ -1,18 +1,17 @@
 import React, { Dispatch, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, connect } from 'react-redux';
-import { Alert, Pagination } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
-import { asyncMoreArticles, setCurrentPage, ArticlesActionTypes } from '../../store/actions';
-import { ArticleType } from '../../types';
-import { IArticlesState } from '../../store/articlesReducer';
-import { formatDate, avatarFallback, randomArticleImage } from '../../common';
+import { Pagination } from 'antd';
+import { asyncGetArticles, setCurrentPage, ArticlesAction } from '../../store/actions';
+import { formatDate, avatarFallback, placeTags, elemLoading, elemAlert } from '../../common';
+import { Article } from '../../types';
+import { ArticlesState } from '../../store/articlesReducer';
 
 
-const renderArticleShort = (props: ArticleType): React.ReactNode => {
+function renderArticleShort(props: Article): React.ReactNode {
   const { slug, title, description, tagList, 
     updatedAt, favorited, favoritesCount, author } = props;
-  const likeClass: string = `like${favorited? "" : " like_unset"}`;
+  const likeClass = `like${favorited? "" : " like_unset"}`;
   return (
   <>
     {/* {<Link to={`/articles/${slug}`}>{ randomArticleImage() }</Link>} */}
@@ -24,22 +23,16 @@ const renderArticleShort = (props: ArticleType): React.ReactNode => {
             {favoritesCount}
           </Link>
         </h2>
-        <ul className="article__tag-list nolist">
-          { tagList.map((el, index) => (
-            <li key={el} className={`tag${index === 0? " tag_main" : ""}`}>
-              <Link to="/" title="Tag functional is incomplete in this release">{el}</Link>
-            </li>
-          ))}
-        </ul>
+        { placeTags(tagList) }
         <p className="article__excerpt">{description}</p>
       </div>
       <aside className="pub-info">
         <Link to="/profile" className="author" title="Author">
           <span>
-            { author.username }
+            { author && author.username }
             <time className="pub-date">{ formatDate(updatedAt) }</time>
           </span>
-          <img src={ author.image } title={ author.bio } 
+          <img src={ author && author.image } title={ author && author.bio } 
             alt="Avatar" className="avatar"
             onError={ avatarFallback }
           />
@@ -51,40 +44,32 @@ const renderArticleShort = (props: ArticleType): React.ReactNode => {
 }
 
 
-
-interface IArticleListProps {
-  loading: Boolean,
+interface ArticleListProps {
+  loading: boolean,
   error: string,
   page: number,
-  list: Array<ArticleType>,
+  list: Article[],
   total: number,
   pageChange: (num: number) => void,
 }
 
 
-const ArticleList: React.FC<IArticleListProps> = ({
-  loading, error, page, list, total, pageChange })=> {
-  
-  // const { store } = useContext(ReactReduxContext);
+const ArticleList: React.FC<ArticleListProps> = (props) => {
+  const { loading, error, page, list, total, pageChange } = props;
   const dispatch = useDispatch();
   
   useEffect(() => {
-    // api.getArticles()
-    //   .then(data => {
-    //     console.log(data.articles[0]);
-    //   })
-    dispatch(asyncMoreArticles(page));
+    dispatch( asyncGetArticles(page) );
   }, [dispatch, page]);
 
-  const elemLoading = loading && <div className="loading"><LoadingOutlined /></div>;
-  const elemAlert = !!error && <Alert className="alert-box" message="Error ocured" description={error} type="error" showIcon />;
   const articles = !loading && !error && (
     <ul className="article-list nolist">
       { list.map(article => (
-        <li key={ article.slug } className="article article_short">
-          { renderArticleShort(article) }
-        </li>
-      )) }        
+          <li key={ article.slug } className="article article_short">
+            { renderArticleShort(article) }
+          </li>
+        ))
+      }        
     </ul>
   );
   const elemPager = !loading && !error && (
@@ -100,15 +85,15 @@ const ArticleList: React.FC<IArticleListProps> = ({
 
   return (
     <section className="page">
-      { elemLoading }
-      { elemAlert }
+      { elemLoading(loading) }
+      { elemAlert(error) }
       { articles }
       { elemPager }
     </section>
   )
-  };
+};
 
-const mapStateToProps = (state: {articles: IArticlesState}) => ({
+const mapStateToProps = (state: {articles: ArticlesState}) => ({
   loading: state.articles.loading, 
   error: state.articles.error,
   page: state.articles.page,
@@ -116,8 +101,8 @@ const mapStateToProps = (state: {articles: IArticlesState}) => ({
   total: state.articles.total,
 });
 
-const mapDispatchToProps = (dispatchFn: Dispatch<ArticlesActionTypes>) => ({
-  pageChange: (num: number) => dispatchFn(setCurrentPage(num)),
+const mapDispatchToProps = (dispatchFn: Dispatch<ArticlesAction>) => ({
+  pageChange: (num: number) => dispatchFn( setCurrentPage(num) ),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArticleList);

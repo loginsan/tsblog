@@ -1,45 +1,57 @@
-export type UserType = {
-  "email": string,
-  "token": string,
-  "username": string,
-  "bio": string,
-  "image": string | null,
+export type User = {
+  email?: string,
+  token?: string,
+  username?: string,
+  bio?: string,
+  image?: string | null,
 }
 
-export type ProfileType = {
-  "username": string,
-  "bio": string,
-  "image": string,
-  "following": Boolean,
+export type Profile = {
+  username?: string,
+  bio?: string,
+  image?: string,
+  following?: boolean,
 }
 
-export type ArticleType = {
-  "slug": string,
-  "title": string,
-  "description": string,
-  "body": string,
-  "tagList": Array<string>,
-  "createdAt": string,
-  "updatedAt": string,
-  "favorited": Boolean,
-  "favoritesCount": number,
-  "author": ProfileType,
+export type Article = {
+  slug?: string,
+  title?: string,
+  description?: string,
+  body?: string,
+  tagList?: string[],
+  createdAt?: string,
+  updatedAt?: string,
+  favorited?: boolean,
+  favoritesCount?: number,
+  author?: Profile,
 }
+
+export type Comment = {
+  id?: number,
+  createdAt?: string,
+  updatedAt?: string,
+  body?: string,
+  author?: Profile,
+}
+
 
 export type ArticleResponse = {
-  "article": ArticleType,
+  article: Article,
 }
 
-export type BunchOfArticles = {
-  "articles": Array<ArticleType>,
-  "articlesCount": number,
+export type ArticlesResponse = {
+  articles: Article[],
+  articlesCount: number,
 }
 
-export type CommentType = {
-  "id": number,
-  "createdAt": string,
-  "updatedAt": string,
-  "body": string,
-  "author": ProfileType,
+export type UserResponse = {
+  user: User,
 }
 
+
+export type AuthRequest = {
+  user: {
+    email: string,
+    password: string,
+  }
+}

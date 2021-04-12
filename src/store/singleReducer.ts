@@ -1,9 +1,9 @@
-import { ArticleType } from '../types';
+import { Article } from '../types';
 import { 
-  ArticleActionType, 
-  IArticleLoading, 
-  IArticleError, 
-  IArticleView, 
+  ArticleAction, 
+  ArticleLoading, 
+  ArticleError, 
+  ArticleView, 
 } from './actions';
 import {
   VIEW_ARTICLE,
@@ -12,50 +12,35 @@ import {
 } from './constants';
 
 
-export interface IArticleState {
-  loading: Boolean,
+export interface ArticleState {
+  loading: boolean,
   error: string,
-  article: ArticleType,
+  article: Article,
 }
 
-const initialState: IArticleState = {
+const initialState: ArticleState = {
   loading: true,
-  error: "",
-  article: {
-    "slug": "",
-    "title": "",
-    "description": "",
-    "body": "",
-    "tagList": [],
-    "createdAt": "",
-    "updatedAt": "",
-    "favorited": false,
-    "favoritesCount": 0,
-    "author": {
-      "username": "",
-      "bio": "",
-      "image": "",
-      "following": false
-    },
-  },
+  error: '',
+  article: {},
 };
 
-const view = (
+export default function view(
   state = initialState, 
-  action: ArticleActionType
-): IArticleState => {
+  action: ArticleAction
+): ArticleState {
+  
   switch (action.type) {
     case VIEW_ARTICLE_LOADING:
       return { 
         ...state,
-        error: "",
-        loading: (action as IArticleLoading).flag
+        error: '',
+        loading: (action as ArticleLoading).flag
       };
     
     case VIEW_ARTICLE_ERROR:
       return { 
         ...state, 
-        error: (action as IArticleError).error,
+        error: (action as ArticleError).error,
         loading: false
       };
     
@@ -63,12 +48,10 @@ const view = (
       return { 
         ...state, 
         loading: false,
-        article: (action as IArticleView).data.article,
+        article: (action as ArticleView).data.article,
       };
 
     default:
       return state;
   }
 };
-
-export default view;

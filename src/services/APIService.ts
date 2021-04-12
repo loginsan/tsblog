@@ -1,11 +1,17 @@
-import { BunchOfArticles, ArticleResponse } from "../types";
+import { 
+  ArticlesResponse, 
+  ArticleResponse, 
+  UserResponse, 
+  AuthRequest
+} from "../types";
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type Payload = AuthRequest;
 
 export async function http<T>(
   url: string, 
   method: Methods = 'GET', 
-  value = null
+  value?: Payload
 ): Promise<T> {
 
   const request: RequestInit = {};
@@ -25,15 +31,15 @@ export async function http<T>(
 
 class APIService {
 
-  base: string = "https://conduit.productionready.io/api";
+  base = "https://conduit.productionready.io/api";
 
-  limit: number = 20;
+  limit = 20;
 
-  from: number = 205000;
+  from = 240000;
 
   endURL(endpoint: string, params: string = ''): string {
-    const str: string = params? `?${params}` : '';
-    const url: string = `${this.base}${endpoint}${str}`;
+    const str = params? `?${params}` : '';
+    const url = `${this.base}${endpoint}${str}`;
     return url;
   }
 
@@ -41,23 +47,34 @@ class APIService {
     page: number = 1, 
     tag?: string, 
     author?: string
-  ): Promise<BunchOfArticles> {
-    const url: string = this.endURL("/articles", 
+  ): Promise<ArticlesResponse> {
+    const url = this.endURL("/articles", 
       `limit=${this.limit}` + 
       `&offset=${this.from + (page - 1) * this.limit}` +
       `${tag? `&tag=${tag}` : ""}` +
       `${author? `&author=${author}` : ""}`
     );
-    const data = await http<BunchOfArticles>(url);
-    return data as BunchOfArticles;
+    const data = await http<ArticlesResponse>(url);
+    return data as ArticlesResponse;
   }
 
   async getArticle(slug: string): Promise<ArticleResponse> {
-    const url: string = this.endURL(`/articles/${slug}`);
+    const url = this.endURL(`/articles/${slug}`);
     const data = await http<ArticleResponse>(url);
     return data as ArticleResponse;
   }
 
+  async authRequest(email: string, pass: string): Promise<UserResponse> {
+    const value: AuthRequest = {
+      user: {
+        email,
+        password: pass,
+      }
+    }
+    const url = this.endURL(`/users/login`);
+    const data = await http<UserResponse>(url, "POST", value);
+    return data as UserResponse;
+  }
 
 }
 

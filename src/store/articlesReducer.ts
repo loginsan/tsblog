@@ -1,10 +1,10 @@
-import { ArticleType } from '../types';
+import { Article } from '../types';
 import { 
-  ArticlesActionTypes, 
-  IArticlesLoading, 
-  IArticlesError, 
-  IArticlesSuccess, 
-  IPageNum,
+  ArticlesAction, 
+  ArticlesLoading, 
+  ArticlesError, 
+  ArticlesSuccess, 
+  PageNum,
 } from './actions';
 import {
   APPEND_ARTICLES,
@@ -14,40 +14,41 @@ import {
 } from './constants';
 
 
-export interface IArticlesState {
-  loading: Boolean,
+export interface ArticlesState {
+  loading: boolean,
   error: string,
   page: number,
-  list: Array<ArticleType>,
+  list: Article[],
   total: number,
   tag: string | null,
 }
 
-const initialState: IArticlesState = {
+const initialState: ArticlesState = {
   loading: true,
-  error: "",
+  error: '',
   page: 1,
   list: [],
   total: 0,
   tag: null,
 };
 
-const articles = (
+export default function articles(
   state = initialState, 
-  action: ArticlesActionTypes
-): IArticlesState => {
+  action: ArticlesAction
+): ArticlesState {
+  
   switch (action.type) {
     case APPEND_ARTICLES_LOADING:
       return { 
         ...state,
-        error: "",
-        loading: (action as IArticlesLoading).flag
+        error: '',
+        loading: (action as ArticlesLoading).flag
       };
     
     case APPEND_ARTICLES_ERROR:
       return { 
         ...state, 
-        error: (action as IArticlesError).error,
+        error: (action as ArticlesError).error,
         loading: false
       };
     
@@ -55,16 +56,14 @@ const articles = (
       return { 
         ...state, 
         loading: false,
-        list: (action as IArticlesSuccess).data.articles,
-        total: (action as IArticlesSuccess).data.articlesCount
+        list: (action as ArticlesSuccess).data.articles,
+        total: (action as ArticlesSuccess).data.articlesCount
       };
     
     case SET_CURRENT_PAGE:
-      return { ...state, page: (action as IPageNum).page };
+      return { ...state, page: (action as PageNum).page };
 
     default:
       return state;
   }
 }
-
-export default articles;

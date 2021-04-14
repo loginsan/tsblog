@@ -7,7 +7,7 @@ const Header: React.FC = () => (
     <h1 className="app-title">
       <NavLink to="/">Realworld Blog</NavLink>
     </h1>
-    <UserMenu isLogged={false} />
+    <UserMenu />
   </header>
 );
 

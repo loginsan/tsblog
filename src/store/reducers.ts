@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
 import articles from "./articlesReducer";
+import user from "./userReducer";
 import view from "./singleReducer";
-import auth from "./authReducer";
 
-const reducer = combineReducers({ articles, view, auth });
+const reducer = combineReducers({ articles, view, user });
 
 export default reducer;

@@ -1,19 +1,28 @@
-import React from 'react';
+import React, { Dispatch } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { UserMenuProps } from './types';
-import profileAvatar from '../../../assets/user-avatar.png';
+import { logoutUser, UserAction } from '../../../store/actions';
+import { UserState } from '../../../store/userReducer';
+import { avatarFallback } from '../../../common';
 
-const UserMenu: React.FC<UserMenuProps> = ({ isLogged }) => isLogged
-  ? (
+
+const UserMenu: React.FC<UserMenuProps> = (props) => {
+  const { user, isLogged, handleLogout } = props;
+
+  return isLogged? (
     <div className="UserMenu">
       <Link to="/new-article" className="link link_new-article" title="Create new article">
         Create article
       </Link>
       <Link to="/profile" className="link link_edit-profile" title="Edit profile">
-        John Doe 
-        <img src={profileAvatar} alt="Avatar" className="avatar" />
+        { user && user.username } 
+        <img src={ user && user.image || '' } title={ user && user.bio } 
+          alt="Avatar" className="avatar"
+          onError={ avatarFallback }
+        />
       </Link>
-      <Link to="/logout" className="link link_logout">
+      <Link to="/logout" className="link link_logout" onClick={(evt) => handleLogout(evt)}>
         Log Out
       </Link>
     </div>
@@ -28,5 +37,20 @@ const UserMenu: React.FC<UserMenuProps> = ({ isLogged }) => isLogged
       </Link>
     </div>
   );
+}
 
-export default UserMenu;
+const mapStateToProps = (state: {user: UserState}) => ({
+  loading: state.user.loading, 
+  error: state.user.error,
+  user: state.user.user,
+  isLogged: state.user.isLogged,
+});
+
+const mapDispatchToProps = (dispatchFn: Dispatch<UserAction>) => ({
+  handleLogout: (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    dispatchFn( logoutUser() );
+   },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);

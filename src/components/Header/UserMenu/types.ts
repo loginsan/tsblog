@@ -1,3 +1,9 @@
+import { User } from '../../../types';
+
 export interface UserMenuProps {
-    isLogged: boolean
+  loading: boolean,
+  error: string,
+  user: User,
+  isLogged: boolean,
+  handleLogout: (event: React.MouseEvent<HTMLAnchorElement>) => void,
 }

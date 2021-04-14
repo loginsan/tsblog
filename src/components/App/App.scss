@@ -107,6 +107,9 @@ a.link_sign-in:hover, a.link_sign-in:focus {
 }
 .link_edit-profile .avatar {
   margin-left: 13px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
 }
 
 
@@ -413,6 +416,10 @@ a.link_sign-in:hover, a.link_sign-in:focus {
 .nolist {
   list-style: none;
   padding: 0;
+}
+
+.long-text {
+  word-break: break-all;
 }
 
 .form {

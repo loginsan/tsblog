@@ -10,6 +10,12 @@ export const VIEW_ARTICLE: string = "VIEW_ARTICLE";
 export const VIEW_ARTICLE_LOADING: string = "VIEW_ARTICLE_LOADING";
 export const VIEW_ARTICLE_ERROR: string = "VIEW_ARTICLE_ERROR";
 
+export const FETCH_USER_LOADING: string = "FETCH_USER_LOADING";
+export const FETCH_USER_ERROR: string = "FETCH_USER_ERROR";
 export const LOGIN_USER: string = "LOGIN_USER";
-export const LOGIN_USER_LOADING: string = "LOGIN_USER_LOADING";
-export const LOGIN_USER_ERROR: string = "LOGIN_USER_ERROR";
+export const LOGOUT_USER: string = "LOGOUT_USER";
+
+// export const UPDATE_USER_LOADING: string = "UPDATE_USER_LOADING";
+// export const UPDATE_USER_ERROR: string = "UPDATE_USER_ERROR";
+export const UPDATE_USER: string = "UPDATE_USER";
+export const REGISTER_USER: string = "REGISTER_USER";

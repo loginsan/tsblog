@@ -4,6 +4,7 @@ export type User = {
   username?: string,
   bio?: string,
   image?: string | null,
+  password?: string,
 }
 
 export type Profile = {

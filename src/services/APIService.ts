@@ -2,23 +2,33 @@ import {
   ArticlesResponse, 
   ArticleResponse, 
   UserResponse, 
-  AuthRequest
-} from "../types";
+  AuthRequest,
+  User,
+} from '../types';
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
-type Payload = AuthRequest;
+type Payload = AuthRequest | UserResponse;
 
 export async function http<T>(
   url: string, 
-  method: Methods = 'GET', 
+  token: string = '',
+  method: Methods = 'GET',
   value?: Payload
 ): Promise<T> {
 
   const request: RequestInit = {};
   request.method = method;
   if (method === 'POST' || method === 'PUT') {
-    request.headers = { 'Content-Type': 'application/json;charset=utf-8' };
+    request.headers = { 
+      'Content-Type': 'application/json;charset=utf-8',
+    };
     request.body = JSON.stringify(value);
+  }
+  if (token !== '') {
+    request.headers = {
+      ...request.headers,
+      'Authorization': `Token ${token}`
+    }
   }
   const response = await fetch(url, request);
   if (!response.ok) {
@@ -31,7 +41,7 @@ export async function http<T>(
 
 class APIService {
 
-  base = "https://conduit.productionready.io/api";
+  base = 'https://conduit.productionready.io/api';
 
   limit = 20;
 
@@ -44,17 +54,18 @@ class APIService {
   }
 
   async getArticles(
-    page: number = 1, 
+    page: number = 1,
+    token: string = '',
     tag?: string, 
     author?: string
   ): Promise<ArticlesResponse> {
-    const url = this.endURL("/articles", 
+    const url = this.endURL('/articles', 
       `limit=${this.limit}` + 
       `&offset=${this.from + (page - 1) * this.limit}` +
-      `${tag? `&tag=${tag}` : ""}` +
-      `${author? `&author=${author}` : ""}`
+      `${tag? `&tag=${tag}` : ''}` +
+      `${author? `&author=${author}` : ''}`
     );
-    const data = await http<ArticlesResponse>(url);
+    const data = await http<ArticlesResponse>(url, token);
     return data as ArticlesResponse;
   }
 
@@ -72,7 +83,24 @@ class APIService {
       }
     }
     const url = this.endURL(`/users/login`);
-    const data = await http<UserResponse>(url, "POST", value);
+    const data = await http<UserResponse>(url, '', 'POST', value);
+    return data as UserResponse;
+  }
+
+  async updateRequest(
+    token: string,
+    user: User
+  ): Promise<UserResponse> {
+    const value: UserResponse = { user };
+    const url = this.endURL(`/user`);
+    const data = await http<UserResponse>(url, token, 'PUT', value);
+    return data as UserResponse;
+  }
+
+  async registerRequest(user: User): Promise<UserResponse> {
+    const value: UserResponse = { user };
+    const url = this.endURL(`/users`);
+    const data = await http<UserResponse>(url, '', 'POST', value);
     return data as UserResponse;
   }
 

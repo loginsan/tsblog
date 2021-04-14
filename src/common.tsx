@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react';  // , { SetStateAction } 
 import { Link } from 'react-router-dom';
 import { Alert } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -62,3 +62,11 @@ export function elemAlert(error: string): React.ReactNode {
     />
   )
 }
+
+// function handleChange(
+//   evt: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>,
+//   fn: SetStateAction<string | ((prevState: string | null) => string | null)>
+// ): void {
+//   const val: string = evt.currentTarget.value;
+//   fn(val);
+// };

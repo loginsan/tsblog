@@ -19,3 +19,4 @@ export const LOGOUT_USER: string = "LOGOUT_USER";
 // export const UPDATE_USER_ERROR: string = "UPDATE_USER_ERROR";
 export const UPDATE_USER: string = "UPDATE_USER";
 export const REGISTER_USER: string = "REGISTER_USER";
+export const GET_CURRENT_USER: string = "GET_CURRENT_USER";

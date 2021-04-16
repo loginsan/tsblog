@@ -2,7 +2,7 @@ import React, { Dispatch, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, connect } from 'react-redux';
 import { Pagination } from 'antd';
-import { asyncGetArticles, setCurrentPage, ArticlesAction } from '../../store/actions';
+import { asyncGetArticles, setCurrentPage, ArticlesAction } from '../../store/articlesActions';
 import { formatDate, avatarFallback, placeTags, elemLoading, elemAlert } from '../../common';
 import { Article } from '../../types';
 import { ArticlesState } from '../../store/articlesReducer';

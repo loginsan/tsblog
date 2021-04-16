@@ -50,23 +50,28 @@ export function elemLoading(loading: boolean): React.ReactNode {
   return loading && <div className="loading"><LoadingOutlined /></div>;
 }
 
+function parseError(data: string) {
+  const container = JSON.parse(data);
+  const obj = container.errors;
+  const messages = [];
+  for (const [key, value] of Object.entries(obj)) {
+    messages.push(`${key}: ${(value as string[]).join(", ")}`);
+  }
+  return messages.join("; ");
+}
+
 export function elemAlert(error: string): React.ReactNode {
+  if (!error) return null;
+  const [status, data] = error.split("|");
+  // console.log(parseError(data));
   return (
     error && 
     <Alert 
       className="alert-box" 
-      message="Error ocured" 
-      description={error} 
+      message={`Error occurred (code ${status})`} 
+      description={ parseError(data) } 
       type="error" 
       showIcon 
     />
   )
 }
-
-// function handleChange(
-//   evt: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>,
-//   fn: SetStateAction<string | ((prevState: string | null) => string | null)>
-// ): void {
-//   const val: string = evt.currentTarget.value;
-//   fn(val);
-// };

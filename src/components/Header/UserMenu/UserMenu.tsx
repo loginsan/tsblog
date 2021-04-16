@@ -1,14 +1,31 @@
-import React, { Dispatch } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
 import { UserMenuProps } from './types';
-import { logoutUser, UserAction } from '../../../store/actions';
+import { asyncCurrentUser } from '../../../store/userActions';
 import { UserState } from '../../../store/userReducer';
-import { avatarFallback } from '../../../common';
+import { avatarFallback, elemLoading } from '../../../common';
 
 
 const UserMenu: React.FC<UserMenuProps> = (props) => {
-  const { user, isLogged, handleLogout } = props;
+  const { loading, user, isLogged } = props;
+  const dispatch = useDispatch();
+  const [cookies] = useCookies(['token']);
+
+  useEffect(() => {
+    if (!isLogged && cookies.token) {
+      dispatch( asyncCurrentUser(cookies.token) );
+    }
+  }, [isLogged, cookies.token, dispatch]);
+
+  if (loading || (!isLogged && cookies.token)) {
+    return (
+      <div className="UserMenu">
+        {elemLoading(true)}
+      </div>
+    )
+  }
 
   return isLogged? (
     <div className="UserMenu">
@@ -22,7 +39,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
           onError={ avatarFallback }
         />
       </Link>
-      <Link to="/logout" className="link link_logout" onClick={(evt) => handleLogout(evt)}>
+      <Link to="/logout" className="link link_logout">
         Log Out
       </Link>
     </div>
@@ -46,11 +63,4 @@ const mapStateToProps = (state: {user: UserState}) => ({
   isLogged: state.user.isLogged,
 });
 
-const mapDispatchToProps = (dispatchFn: Dispatch<UserAction>) => ({
-  handleLogout: (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    dispatchFn( logoutUser() );
-   },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);
+export default connect(mapStateToProps, {})(UserMenu);

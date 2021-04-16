@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useStore, useDispatch, connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 import { UserState } from '../../store/userReducer';
-import { asyncUpdateProfile } from '../../store/actions';
+import { asyncUpdateProfile } from '../../store/userActions';
 import { elemLoading, elemAlert } from '../../common';
 
 
@@ -11,6 +12,7 @@ const Profile: React.FC = () => {
   const store = useStore();
   const dispatch = useDispatch();
   const { loading, error, user, isLogged } = store.getState().user;
+  const [cookies] = useCookies(['token']);
 
   const [username, setUsername] = useState(user.username || '');
   const [email, setEmail] = useState(user.email || '');
@@ -43,7 +45,7 @@ const Profile: React.FC = () => {
     <section className="form">
       { elemLoading(loading) }
       { elemAlert(error) }
-      { !isLogged && (<>
+      { !isLogged && !cookies.token && (<>
           <h2>Access denied</h2>
           <p className="long-text">You must sign-in first</p>
           <Redirect to="/" />

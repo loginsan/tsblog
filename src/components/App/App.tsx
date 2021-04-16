@@ -7,6 +7,7 @@ import ArticleList from '../ArticleList';
 import SignUp from '../SignUp';
 import SignIn from '../SignIn';
 import Profile from '../Profile';
+import Logout from '../Logout';
 import EditArticle from '../EditArticle';
 import NewArticle from '../NewArticle';
 import './App.scss';
@@ -46,6 +47,9 @@ const App: React.FC = () => (
             </Route>
             <Route path="/profile">
               <Profile />
+            </Route>
+            <Route path="/logout">
+              <Logout />
             </Route>
             <Route>
               <h5>There is no page with such address</h5>

@@ -1,12 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-import { createStore, applyMiddleware, compose } from "redux";
-import { Provider } from "react-redux";
-import reduxThunk from "redux-thunk";
-import reducer from "./store/reducers";
-// import { asyncLoadPosts } from "./store/actions";
-
+import { createStore, applyMiddleware, compose } from 'redux';
+import { Provider } from 'react-redux';
+import reduxThunk from 'redux-thunk';
+import { CookiesProvider } from 'react-cookie';
+import reducer from './store/reducers';
 import './index.css';
 import App from './components/App';
 
@@ -27,7 +25,9 @@ const store = createStore(
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <CookiesProvider>
+        <App />
+      </CookiesProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { connect, useStore, useDispatch } from 'react-redux';
-import { asyncGetArticle } from '../../store/actions';
+import { asyncGetArticle } from '../../store/articlesActions';
 import { ArticleState } from '../../store/singleReducer';
 import { Article } from '../../types';
 import { formatDate, avatarFallback, placeTags, elemLoading, elemAlert } from '../../common';

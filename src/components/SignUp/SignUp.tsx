@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore, useDispatch, connect } from 'react-redux';
 import { UserState } from '../../store/userReducer';
-import { asyncRegister } from '../../store/actions';
+import { asyncRegister } from '../../store/userActions';
 import { elemLoading, elemAlert } from '../../common';
 
 

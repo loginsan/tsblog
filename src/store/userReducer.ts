@@ -6,7 +6,8 @@ import {
   LoginSuccess, 
   UpdateUserSuccess,
   RegisterSuccess,
-} from './actions';
+  GetCurrentUser,
+} from './userActions';
 import {
   FETCH_USER_LOADING,
   FETCH_USER_ERROR,
@@ -14,6 +15,7 @@ import {
   LOGOUT_USER,
   UPDATE_USER,
   REGISTER_USER,
+  GET_CURRENT_USER,
 } from './constants';
 
 
@@ -75,6 +77,14 @@ export default function user(
         loading: false,
         user: (action as RegisterSuccess).data.user,
       };
+    
+    case GET_CURRENT_USER:
+        return {
+          ...state,
+          loading: false,
+          user: (action as GetCurrentUser).data.user,
+          isLogged: true,
+        }
 
     default:
       return state;

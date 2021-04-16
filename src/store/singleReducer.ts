@@ -1,10 +1,5 @@
-import { Article } from '../types';
-import { 
-  ArticleAction, 
-  ArticleLoading, 
-  ArticleError, 
-  ArticleView, 
-} from './actions';
+import { Article, ArticleResponse } from '../types';
+import { ArticleAction } from './articlesActions';
 import {
   VIEW_ARTICLE,
   VIEW_ARTICLE_LOADING,
@@ -34,13 +29,13 @@ export default function view(
       return { 
         ...state,
         error: '',
-        loading: (action as ArticleLoading).flag
+        loading: action.payload as boolean,
       };
     
     case VIEW_ARTICLE_ERROR:
       return { 
         ...state, 
-        error: (action as ArticleError).error,
+        error: action.payload as string,
         loading: false
       };
     
@@ -48,7 +43,7 @@ export default function view(
       return { 
         ...state, 
         loading: false,
-        article: (action as ArticleView).data.article,
+        article: (action.payload as ArticleResponse).article,
       };
 
     default:

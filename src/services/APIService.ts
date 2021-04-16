@@ -32,7 +32,8 @@ export async function http<T>(
   }
   const response = await fetch(url, request);
   if (!response.ok) {
-    throw new Error(`Can't send request, recieve ${response.status}`);
+    const errorsData: string = await response.text();
+    throw new Error(`${response.status}|${errorsData}`);
   }
   const body:T = await response.json();
   return body;
@@ -75,7 +76,7 @@ class APIService {
     return data as ArticleResponse;
   }
 
-  async authRequest(email: string, pass: string): Promise<UserResponse> {
+  async authUserRequest(email: string, pass: string): Promise<UserResponse> {
     const value: AuthRequest = {
       user: {
         email,
@@ -87,7 +88,7 @@ class APIService {
     return data as UserResponse;
   }
 
-  async updateRequest(
+  async updateUserRequest(
     token: string,
     user: User
   ): Promise<UserResponse> {
@@ -97,7 +98,13 @@ class APIService {
     return data as UserResponse;
   }
 
-  async registerRequest(user: User): Promise<UserResponse> {
+  async getUserRequest(token: string): Promise<UserResponse> {
+    const url = this.endURL(`/user`);
+    const data = await http<UserResponse>(url, token);
+    return data as UserResponse;
+  }
+
+  async registerUserRequest(user: User): Promise<UserResponse> {
     const value: UserResponse = { user };
     const url = this.endURL(`/users`);
     const data = await http<UserResponse>(url, '', 'POST', value);

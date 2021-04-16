@@ -1,35 +1,45 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { useStore, useDispatch, connect } from 'react-redux';
+
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup'
+import { useCookies } from 'react-cookie';
+
 import { UserState } from '../../store/userReducer';
-import { asyncGetAuth } from '../../store/actions';
+import { asyncGetAuth } from '../../store/userActions';
 import { elemLoading, elemAlert } from '../../common';
 
+
+interface FieldSet {
+  email: string,
+  password: string
+}
+
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().required(),
+});
 
 const SignIn: React.FC = () => {
 
   const store = useStore();
   const dispatch = useDispatch();
   const { loading, error, user, isLogged } = store.getState().user;
+  const [cookies, setCookie] = useCookies(['token']);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  if (user.token && !cookies.token) {
+    setCookie('token', user.token);
+  }
 
-  type SetterFunction = typeof setEmail;
+  const { register, handleSubmit, formState: { errors } } = useForm<FieldSet>({
+    resolver: yupResolver(schema)
+  });
 
-  function handleChange(
-    evt: React.ChangeEvent<HTMLInputElement>,
-    fn: SetterFunction
-  ): void {
-    const val: string = evt.currentTarget.value;
-    fn(val);
-  };
-
-  function handleSubmit(
-    evt: React.FormEvent<HTMLFormElement>
-  ) {
-    // TODO: form validation
-    dispatch( asyncGetAuth(email, password) );
+  function onSubmit(data: FieldSet) {
+    // console.log(data);
+    dispatch( asyncGetAuth(data.email, data.password) );
     //  bambrillo@ya.ru  lin_RwB180 → S1mpleP@ss
   }
 
@@ -46,7 +56,7 @@ const SignIn: React.FC = () => {
           <h2 className="form__title">Sign In</h2>
           <form 
             className="form__body"
-            onSubmit={(evt) => handleSubmit(evt)}
+            onSubmit={ handleSubmit(onSubmit) }
           >
             <ul className="form__field-list nolist">
               <li className="form__field">
@@ -54,36 +64,34 @@ const SignIn: React.FC = () => {
                   Email address
                 </label>
                 <input
-                  className="control control_input"
+                  className={`control control_input${errors.email? " error" : ""}`}
                   type="email"
                   id="email"
-                  name="email"
                   placeholder="Email address"
-                  value={email}
-                  onChange={(evt) => handleChange(evt, setEmail)}
+                  {...register("email")}
                 />
-                <span className="note_field error">
-                  Неверный формат электронной почты
-                </span>
-                <span className="note_field">1</span>
+                { errors.email && (
+                  <span className="note_field error show">
+                    { errors.email?.message }
+                  </span>
+                )}
               </li>
               <li className="form__field">
                 <label className="label" htmlFor="password">
                   Password
                 </label>
                 <input
-                  className="control control_input"
+                  className={`control control_input${errors.password? " error" : ""}`}
                   type="password"
                   id="password"
-                  name="password"
                   placeholder="Password"
-                  value={password}
-                  onChange={(evt) => handleChange(evt, setPassword)}
+                  {...register("password")}
                 />
-                <span className="note_field error">
-                  Wrong password
-                </span>
-                <span className="note_field">2</span>
+                { errors.password && (
+                  <span className="note_field error show">
+                    { errors.password?.message }
+                  </span>
+                )}
               </li>
               
               <li className="form__field">

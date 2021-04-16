@@ -5,5 +5,4 @@ export interface UserMenuProps {
   error: string,
   user: User,
   isLogged: boolean,
-  handleLogout: (event: React.MouseEvent<HTMLAnchorElement>) => void,
 }

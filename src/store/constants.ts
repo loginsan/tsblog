@@ -1,6 +1,6 @@
-export const APPEND_ARTICLES: string = "APPEND_ARTICLES";
-export const APPEND_ARTICLES_ERROR: string = "APPEND_ARTICLES_ERROR";
-export const APPEND_ARTICLES_LOADING: string = "APPEND_ARTICLES_LOADING";
+export const LOAD_ARTICLES: string = "LOAD_ARTICLES";
+export const LOAD_ARTICLES_ERROR: string = "LOAD_ARTICLES_ERROR";
+export const LOAD_ARTICLES_LOADING: string = "LOAD_ARTICLES_LOADING";
 
 export const SET_CURRENT_PAGE: string = "SET_CURRENT_PAGE";
 

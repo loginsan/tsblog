@@ -1,15 +1,9 @@
-import { Article } from '../types';
-import { 
-  ArticlesAction, 
-  ArticlesLoading, 
-  ArticlesError, 
-  ArticlesSuccess, 
-  PageNum,
-} from './actions';
+import { Article, ArticlesResponse } from '../types';
+import { ArticlesAction } from './articlesActions';
 import {
-  APPEND_ARTICLES,
-  APPEND_ARTICLES_ERROR,
-  APPEND_ARTICLES_LOADING,
+  LOAD_ARTICLES,
+  LOAD_ARTICLES_ERROR,
+  LOAD_ARTICLES_LOADING,
   SET_CURRENT_PAGE,
 } from './constants';
 
@@ -38,30 +32,32 @@ export default function articles(
 ): ArticlesState {
   
   switch (action.type) {
-    case APPEND_ARTICLES_LOADING:
+    case LOAD_ARTICLES_LOADING:
       return { 
         ...state,
+        loading: action.payload as boolean,
         error: '',
-        loading: (action as ArticlesLoading).flag
       };
     
-    case APPEND_ARTICLES_ERROR:
-      return { 
-        ...state, 
-        error: (action as ArticlesError).error,
-        loading: false
-      };
-    
-    case APPEND_ARTICLES:
+    case LOAD_ARTICLES_ERROR:
       return { 
         ...state, 
         loading: false,
-        list: (action as ArticlesSuccess).data.articles,
-        total: (action as ArticlesSuccess).data.articlesCount
+        error: action.payload as string,
       };
     
+    case LOAD_ARTICLES: {
+      const data = action.payload as ArticlesResponse;
+      return { 
+        ...state, 
+        loading: false,
+        list: data.articles,
+        total: data.articlesCount,
+      }
+    }
+    
     case SET_CURRENT_PAGE:
-      return { ...state, page: (action as PageNum).page };
+      return { ...state, page: action.payload as number };
 
     default:
       return state;

@@ -79,12 +79,12 @@ export default function user(
       };
     
     case GET_CURRENT_USER:
-        return {
-          ...state,
-          loading: false,
-          user: (action as GetCurrentUser).data.user,
-          isLogged: true,
-        }
+      return {
+        ...state,
+        loading: false,
+        user: (action as GetCurrentUser).data.user,
+        isLogged: true,
+      }
 
     default:
       return state;

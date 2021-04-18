@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore, useDispatch, connect } from 'react-redux';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup'
+import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
 
 import { UserState } from '../../store/userReducer';
 import { asyncGetAuth } from '../../store/userActions';
-import { elemLoading, elemAlert } from '../../common';
+import { elemLoading, elemAlert, fieldErrorTip } from '../../common';
 
 
 interface FieldSet {
@@ -29,9 +29,11 @@ const SignIn: React.FC = () => {
   const { loading, error, user, isLogged } = store.getState().user;
   const [cookies, setCookie] = useCookies(['token']);
 
-  if (user.token && !cookies.token) {
-    setCookie('token', user.token);
-  }
+  useEffect(() => {
+    if (user.token && !cookies.token) {
+      setCookie('token', user.token);
+    }
+  }, [user, cookies, setCookie]);
 
   const { register, handleSubmit, formState: { errors } } = useForm<FieldSet>({
     resolver: yupResolver(schema)
@@ -63,35 +65,25 @@ const SignIn: React.FC = () => {
                 <label className="label" htmlFor="email">
                   Email address
                 </label>
-                <input
+                <input type="email"
                   className={`control control_input${errors.email? " error" : ""}`}
-                  type="email"
                   id="email"
                   placeholder="Email address"
                   {...register("email")}
                 />
-                { errors.email && (
-                  <span className="note_field error show">
-                    { errors.email?.message }
-                  </span>
-                )}
+                { fieldErrorTip(errors.email) }
               </li>
               <li className="form__field">
                 <label className="label" htmlFor="password">
                   Password
                 </label>
-                <input
+                <input type="password"
                   className={`control control_input${errors.password? " error" : ""}`}
-                  type="password"
                   id="password"
                   placeholder="Password"
                   {...register("password")}
                 />
-                { errors.password && (
-                  <span className="note_field error show">
-                    { errors.password?.message }
-                  </span>
-                )}
+                { fieldErrorTip(errors.password) }
               </li>
               
               <li className="form__field">

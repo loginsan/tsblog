@@ -1,7 +1,7 @@
 import { Dispatch } from 'react';
 import api from '../services/APIService';
 import {
-  UserResponse, 
+  UserData, 
   User,
 } from '../types';
 import {
@@ -29,7 +29,7 @@ export interface LoginError {
 
 export interface LoginSuccess {
   type: typeof LOGIN_USER,
-  data: UserResponse,
+  data: UserData,
 }
 
 export interface LogoutSuccess {
@@ -38,17 +38,17 @@ export interface LogoutSuccess {
 
 export interface UpdateUserSuccess {
   type: typeof UPDATE_USER,
-  data: UserResponse,
+  data: UserData,
 }
 
 export interface RegisterSuccess {
   type: typeof REGISTER_USER,
-  data: UserResponse,
+  data: UserData,
 }
 
 export interface GetCurrentUser {
   type: typeof GET_CURRENT_USER
-  data: UserResponse
+  data: UserData
 }
 
 
@@ -67,7 +67,7 @@ export const fetchUserError = (msg: string): UserAction => ({
 });
 
 
-export const loginUser = (data: UserResponse): UserAction => ({
+export const loginUser = (data: UserData): UserAction => ({
   type: LOGIN_USER,
   data,
 });
@@ -80,7 +80,7 @@ async function fetchAuth(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserResponse = await service.authUserRequest(email, pass);
+    const data: UserData = await service.authUserRequest(email, pass);
     dispatch( loginUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );
@@ -99,7 +99,7 @@ export const logoutUser = (): UserAction => ({
 });
 
 
-export const updateUser = (data: UserResponse): UserAction => ({
+export const updateUser = (data: UserData): UserAction => ({
   type: UPDATE_USER,
   data,
 });
@@ -112,7 +112,7 @@ async function fetchUpdateUser(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserResponse = await service.updateUserRequest(token, user);
+    const data: UserData = await service.updateUserRequest(token, user);
     dispatch( updateUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );
@@ -126,7 +126,7 @@ export function asyncUpdateProfile(token: string, user: User) {
 }
 
 
-export const registerUser = (data: UserResponse): UserAction => ({
+export const registerUser = (data: UserData): UserAction => ({
   type: REGISTER_USER,
   data,
 });
@@ -138,7 +138,7 @@ async function fetchRegisterUser(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserResponse = await service.registerUserRequest(user);
+    const data: UserData = await service.registerUserRequest(user);
     dispatch( registerUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );
@@ -152,7 +152,7 @@ export function asyncRegister(user: User) {
 }
 
 
-export const getCurrentUser = (data: UserResponse): UserAction => ({
+export const getCurrentUser = (data: UserData): UserAction => ({
   type: GET_CURRENT_USER,
   data,
 });
@@ -164,7 +164,7 @@ async function fetchCurrentUser(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserResponse = await service.getUserRequest(token);
+    const data: UserData = await service.getUserRequest(token);
     dispatch( getCurrentUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );

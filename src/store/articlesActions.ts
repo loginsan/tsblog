@@ -1,8 +1,8 @@
 import { Dispatch } from 'react';
 import api from '../services/APIService';
 import { 
-  ArticlesResponse, 
-  ArticleResponse,
+  ArticlesData, 
+  ArticleData,
 } from '../types';
 import {
   LOAD_ARTICLES,
@@ -31,7 +31,7 @@ export interface ArticlesError {
 
 export interface ArticlesSuccess {
   type: typeof LOAD_ARTICLES,
-  payload: ArticlesResponse, 
+  payload: ArticlesData, 
 }
 
 export interface PageNum {
@@ -41,7 +41,7 @@ export interface PageNum {
 
 export interface ArticleView {
   type: typeof VIEW_ARTICLE,
-  payload: ArticleResponse,
+  payload: ArticleData,
 }
 
 export interface ArticleLoading {
@@ -63,12 +63,12 @@ interface ArticleTag {
 //   ArticlesSuccess|PageNum;
 export type ArticlesAction = {
   type: string,
-  payload: boolean | string | number | ArticlesResponse;
+  payload: boolean | string | number | ArticlesData;
 };
 // export type ArticleAction = ArticleLoading|ArticleError|ArticleView;
 export type ArticleAction = {
   type: string,
-  payload: boolean | string | ArticleResponse;
+  payload: boolean | string | ArticleData;
 };
 
 
@@ -83,7 +83,7 @@ export const setArticlesError = (msg: string): ArticlesAction => ({
   payload: msg,
 });
 
-export const setArticles = (data: ArticlesResponse): ArticlesAction => ({
+export const setArticles = (data: ArticlesData): ArticlesAction => ({
   type: LOAD_ARTICLES,
   payload: data,
 });
@@ -98,7 +98,7 @@ export const viewArticleError = (msg: string): ArticleAction => ({
   payload: msg,
 });
 
-export const viewArticle = (data: ArticleResponse): ArticleAction => ({
+export const viewArticle = (data: ArticleData): ArticleAction => ({
   type: VIEW_ARTICLE,
   payload: data,
 });
@@ -124,7 +124,7 @@ async function fetchArticles(
 
   dispatch( setArticlesLoading(true) );
   try {
-    const data: ArticlesResponse = await service.getArticles(page);
+    const data: ArticlesData = await service.getArticles(page);
     dispatch( setArticles(data) );
   } catch (err) {
     dispatch( setArticlesError(err.message) );
@@ -146,7 +146,7 @@ async function fetchArticle(
 
   dispatch( viewArticleLoading(true) );
   try {
-    const data: ArticleResponse = await service.getArticle(id);
+    const data: ArticleData = await service.getArticle(id);
     dispatch( viewArticle(data) );
   } catch (err) {
     dispatch( viewArticleError(err.message) );

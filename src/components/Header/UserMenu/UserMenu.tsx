@@ -1,28 +1,24 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { UserMenuProps } from './types';
-import { asyncCurrentUser } from '../../../store/userActions';
+// import { asyncCurrentUser } from '../../../store/userActions';
 import { UserState } from '../../../store/userReducer';
-import { avatarFallback, elemLoading } from '../../../common';
+import { avatarFallback } from '../../../common';
 
 
 const UserMenu: React.FC<UserMenuProps> = (props) => {
   const { loading, user, isLogged } = props;
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
 
-  useEffect(() => {
-    if (!isLogged && cookies.token) {
-      dispatch( asyncCurrentUser(cookies.token) );
-    }
-  }, [isLogged, cookies.token, dispatch]);
+  // console.log(`usermenu render, ${user.username? user.username : "-"}`);
 
   if (loading || (!isLogged && cookies.token)) {
     return (
       <div className="UserMenu">
-        {elemLoading(true)}
+        <span>…</span>
       </div>
     )
   }

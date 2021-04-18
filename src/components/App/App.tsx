@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import { useStore, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
+
 import 'antd/dist/antd.css';
 import Header from '../Header';
 import ArticleView from '../ArticleView';
@@ -12,8 +16,22 @@ import EditArticle from '../EditArticle';
 import NewArticle from '../NewArticle';
 import './App.scss';
 
+import { asyncCurrentUser } from '../../store/userActions';
 
-const App: React.FC = () => (
+
+const App: React.FC = () => {
+  const store = useStore();
+  const dispatch = useDispatch();
+  const { isLogged } = store.getState().user;
+  const [cookies] = useCookies(['token']);
+
+  useEffect(() => {
+    if (!isLogged && cookies.token) {
+      dispatch( asyncCurrentUser(cookies.token) )
+    }
+  }, [isLogged, cookies.token, dispatch]);
+
+  return (
     <Router>
       <div className="app">
         <Header />
@@ -58,6 +76,7 @@ const App: React.FC = () => (
         </main>
       </div>
     </Router>
-  );
+  )
+};
 
 export default App;

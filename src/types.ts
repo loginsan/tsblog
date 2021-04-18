@@ -36,23 +36,15 @@ export type Comment = {
 }
 
 
-export type ArticleResponse = {
+export type ArticleData = {
   article: Article,
 }
 
-export type ArticlesResponse = {
+export type ArticlesData = {
   articles: Article[],
   articlesCount: number,
 }
 
-export type UserResponse = {
+export type UserData = {
   user: User,
-}
-
-
-export type AuthRequest = {
-  user: {
-    email: string,
-    password: string,
-  }
 }

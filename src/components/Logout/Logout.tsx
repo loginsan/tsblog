@@ -10,13 +10,11 @@ const Logout: React.FC = () => {
   const [, , removeCookie] = useCookies(['token']);
 
   useEffect(() => () => {
-    // console.log(cookies.token);
     dispatch( logoutUser() );
     removeCookie('token');
-    // console.log('cookie removed');
   });
 
-  return <Redirect to="/" />;
+  return <Redirect to="/" />
 }
 
 export default Logout;

@@ -1,4 +1,4 @@
-import { Article, ArticlesResponse } from '../types';
+import { Article, ArticlesData } from '../types';
 import { ArticlesAction } from './articlesActions';
 import {
   LOAD_ARTICLES,
@@ -47,7 +47,7 @@ export default function articles(
       };
     
     case LOAD_ARTICLES: {
-      const data = action.payload as ArticlesResponse;
+      const data = action.payload as ArticlesData;
       return { 
         ...state, 
         loading: false,

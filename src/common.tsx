@@ -1,5 +1,6 @@
-import React from 'react';  // , { SetStateAction } 
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { FieldError } from 'react-hook-form';
 import { Alert } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import avatarDefault from './assets/user-avatar.png';
@@ -7,10 +8,11 @@ import avatarDefault from './assets/user-avatar.png';
 
 export function formatDate(dateStr?: string, locale: string = "en"): string {
   const date = dateStr? new Date(dateStr) : new Date();
-  const yy = new Intl.DateTimeFormat(locale, { year: 'numeric' }).format(date);
-  const mm = new Intl.DateTimeFormat(locale, { month: 'long' }).format(date);
-  const dd = new Intl.DateTimeFormat(locale, { day: 'numeric' }).format(date);
-  return `${mm} ${dd}, ${yy}`;
+  const fd = new Intl.DateTimeFormat(
+    locale, 
+    { year: 'numeric',  month: 'long', day: 'numeric' }
+  ).format(date);
+  return `${fd}`;
 }
 
 export function randomArticleImage(): React.ReactNode {
@@ -24,6 +26,7 @@ export function randomArticleImage(): React.ReactNode {
 }
 
 type ErrorEvent = React.SyntheticEvent<HTMLImageElement>;
+type ManualError = (name: string, error: FieldError) => void;
 
 export function avatarFallback(event: ErrorEvent): void { 
   const ev = event; 
@@ -50,28 +53,36 @@ export function elemLoading(loading: boolean): React.ReactNode {
   return loading && <div className="loading"><LoadingOutlined /></div>;
 }
 
-function parseError(data: string) {
+export function parseError(data: string): string[] {
   const container = JSON.parse(data);
   const obj = container.errors;
   const messages = [];
   for (const [key, value] of Object.entries(obj)) {
     messages.push(`${key}: ${(value as string[]).join(", ")}`);
   }
-  return messages.join("; ");
+  return messages;
 }
 
 export function elemAlert(error: string): React.ReactNode {
   if (!error) return null;
   const [status, data] = error.split("|");
-  // console.log(parseError(data));
+  const list = parseError(data); 
   return (
     error && 
     <Alert 
       className="alert-box" 
       message={`Error occurred (code ${status})`} 
-      description={ parseError(data) } 
+      description={ list.join("; ") } 
       type="error" 
       showIcon 
     />
+  )
+}
+
+export function fieldErrorTip(error: FieldError | undefined): React.ReactNode {
+  return error && (
+    <span className="note_field error show">
+      { error?.message }
+    </span>
   )
 }

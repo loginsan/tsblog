@@ -1,42 +1,77 @@
-import React, { useState } from 'react';
-import { useStore, useDispatch, connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
+
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
+
 import { UserState } from '../../store/userReducer';
 import { asyncUpdateProfile } from '../../store/userActions';
-import { elemLoading, elemAlert } from '../../common';
+import { elemLoading, elemAlert, fieldErrorTip } from '../../common';
+import { UserMenuProps } from '../Header/UserMenu/types';
 
 
-const Profile: React.FC = () => {
+interface FieldSet {
+  username: string,
+  email: string,
+  password?: string,
+  bio?: string,
+  image?: string,
+}
 
-  const store = useStore();
+const schema = yup.object().shape({
+  username: yup.string().required(),
+  email: yup.string().email().required(),
+  password: yup
+    .mixed()
+    .test('passwordTest', 
+      'Password must be empty or has length from 8 to 40 characters',
+      value => value === '' || (value.length >= 8 &&  value.length <= 40)
+    ),
+  bio: yup.string(),
+  image: yup.string().url(),
+});
+
+
+const Profile: React.FC<UserMenuProps> = (props) => {
+  const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
-  const { loading, error, user, isLogged } = store.getState().user;
-  const [cookies] = useCookies(['token']);
 
-  const [username, setUsername] = useState(user.username || '');
-  const [email, setEmail] = useState(user.email || '');
-  const [password, setPassword] = useState('');
-  const [bio, setBio] = useState(user.bio || '');
-  const [image, setImage] = useState(user.image || '');
+  const [cookies] = useCookies(['token']);
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors }, 
+    setValue 
+  } = useForm<FieldSet>({ resolver: yupResolver(schema) });
+
   const [submitted, setSubmitted] = useState(false);
 
-  type SetterFunction = typeof setEmail;
+  useEffect(() => {
+    setValue('username', user.username || '');
+    setValue('email', user.email || '');
+    setValue('bio', user.bio || '');
+    setValue('image', user.image || '');
+  }, [user, setValue]);
 
-  function handleChange(
-    evt: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement>,
-    fn: SetterFunction
-  ): void {
-    const val: string = evt.currentTarget.value;
-    fn(val);
-  };
-
-  function handleSubmit(
-    evt: React.MouseEvent<HTMLButtonElement>
-  ) {
-    // TODO: form validation
-    const userData = { username, email, password, bio, image };
-    dispatch( asyncUpdateProfile(user.token, userData) );
+  function onSubmit(data: FieldSet) {
+    // console.log(data);
+    const userData: FieldSet = { 
+      username: data.username, 
+      email: data.email
+    } 
+    if (data.password !== '') {
+      userData.password = data.password
+    }
+    if (data.bio !== '') {
+      userData.bio = data.bio
+    }
+    if (data.image !== '') {
+      userData.image = data.image
+    }
+    dispatch( asyncUpdateProfile(user.token!, userData) );
     setSubmitted(true);
   }
 
@@ -57,113 +92,82 @@ const Profile: React.FC = () => {
         </>)
       }
       { isLogged && !submitted && (<>
-          <h2 className="form__title">Edit Profile</h2>
+        <h2 className="form__title">Edit Profile</h2>
+        <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
           <ul className="form__field-list nolist">
             <li className="form__field">
               <label className="label" htmlFor="username">
                 Username
               </label>
-              <input
-                className="control control_input"
-                type="text"
+              <input type="text"
+                className={`control control_input${errors.username? " error" : ""}`}
                 id="username"
-                name="username"
                 placeholder="Username"
                 autoComplete="off"
-                value={username}
-                onChange={(evt) => handleChange(evt, setUsername)}
+                {...register("username")}
               />
-              <span className="note_field error">
-                Пользователь с таким именем уже есть
-              </span>
-              <span className="note_field">Use A-Za-z0-9_ characters</span>
+              { fieldErrorTip(errors.username) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="email">
                 Email address
               </label>
-              <input
-                className="control control_input"
-                type="email"
+              <input type="email"
+                className={`control control_input${errors.email? " error" : ""}`}
                 id="email"
-                name="email"
                 placeholder="Email address"
                 autoComplete="off"
-                value={email}
-                onChange={(evt) => handleChange(evt, setEmail)}
+                {...register("email")}
               />
-              <span className="note_field error">
-                Неверный формат электронной почты
-              </span>
-              <span className="note_field">1</span>
+              { fieldErrorTip(errors.email) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="password">
                 New password
               </label>
-              <input
-                className="control control_input"
-                type="password"
+              <input type="password"
+                className={`control control_input${errors.password? " error" : ""}`}
                 id="password"
-                name="password"
                 placeholder="New password"
-                value={password}
-                onChange={(evt) => handleChange(evt, setPassword)}
+                {...register("password")}
               />
-              <span className="note_field error">
-                Wrong password
-              </span>
-              <span className="note_field">2</span>
+              { fieldErrorTip(errors.password) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="bio">
                 Bio
               </label>
               <textarea
-                className="control control_textarea"
+                className={`control control_textarea${errors.bio? " error" : ""}`}
                 id="bio"
-                name="bio"
                 cols={30}
                 rows={5}
                 placeholder="Bio"
-                value={bio}
-                onChange={(evt => handleChange(evt, setBio))}
+                {...register("bio")}
               />        
-              <span className="note_field error">
-                Your text needs to be at least 80 characters
-              </span>
-              <span className="note_field">2</span>
+              { fieldErrorTip(errors.bio) }
             </li>
             <li className="form__field">
-              <label className="label" htmlFor="avatar">
+              <label className="label" htmlFor="image">
                 Avatar image (url)
               </label>
-              <input
-                className="control control_input"
-                type="text"
-                id="avatar"
-                name="avatar"
+              <input type="text"
+                className={`control control_input${errors.image? " error" : ""}`}
+                id="image"
                 placeholder="Avatar image"
                 autoComplete="off"
-                value={image}
-                onChange={(evt) => handleChange(evt, setImage)}
+                {...register("image")}
               />
-              <span className="note_field error">
-                Something odd…
-              </span>
-              <span className="note_field">4</span>
+              { fieldErrorTip(errors.image) }
             </li>
             
             <li className="form__field">
-              <button
-                type="submit"
-                className="btn_submit"
-                onClick={handleSubmit}
-              >
+              <button type="submit" className="btn_submit">
                 Save
               </button>
             </li>
           </ul>
+          </form>
         </>)
       }
     </section>

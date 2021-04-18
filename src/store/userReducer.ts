@@ -90,3 +90,12 @@ export default function user(
       return state;
   }
 };
+
+export function mapUserStateToProps(state: {user: UserState}) {
+  return {
+    loading: state.user.loading, 
+    error: state.user.error,
+    user: state.user.user,
+    isLogged: state.user.isLogged,
+  }
+}

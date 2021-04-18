@@ -7,9 +7,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
 
-import { UserState } from '../../store/userReducer';
+import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncGetAuth } from '../../store/userActions';
-import { elemLoading, elemAlert, fieldErrorTip } from '../../common';
+import { elemLoading, elemAlert, fieldErrorTip, parseError } from '../../common';
 
 
 interface FieldSet {
@@ -17,10 +17,13 @@ interface FieldSet {
   password: string
 }
 
+type Keys = "password" | "email";
+
 const schema = yup.object().shape({
   email: yup.string().email().required(),
   password: yup.string().required(),
 });
+
 
 const SignIn: React.FC = () => {
 
@@ -35,15 +38,34 @@ const SignIn: React.FC = () => {
     }
   }, [user, cookies, setCookie]);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FieldSet>({
-    resolver: yupResolver(schema)
-  });
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors } 
+  } = useForm<FieldSet>({ resolver: yupResolver(schema) });
 
   function onSubmit(data: FieldSet) {
     // console.log(data);
     dispatch( asyncGetAuth(data.email, data.password) );
     //  bambrillo@ya.ru  lin_RwB180 → S1mpleP@ss
   }
+
+  useEffect(() => {
+    if (error) {
+      const [, errorData] = error.split('|');
+      const errorList = parseError(errorData);
+      for (let i = 0; i < errorList.length; i++) {
+        const [key, value] = errorList[i].split(': ');
+        if (key.includes(" or ")) {
+          setError("email", { type: "manual", message: value });
+          setError("password", { type: "manual", message: value });
+        } else {
+          setError(key as Keys, { type: "manual", message: value })
+        }
+      }
+    }
+  }, [error, setError]);
 
   return (
     <section className="form">
@@ -102,11 +124,4 @@ const SignIn: React.FC = () => {
   )
 };
 
-
-const mapStateToProps = (state: {user: UserState}) => ({
-  loading: state.user.loading, 
-  error: state.user.error,
-  user: state.user.user,
-});
-
-export default connect(mapStateToProps, {})(SignIn);
+export default connect(mapUserStateToProps, {})(SignIn);

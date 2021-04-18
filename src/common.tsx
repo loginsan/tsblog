@@ -26,7 +26,6 @@ export function randomArticleImage(): React.ReactNode {
 }
 
 type ErrorEvent = React.SyntheticEvent<HTMLImageElement>;
-type ManualError = (name: string, error: FieldError) => void;
 
 export function avatarFallback(event: ErrorEvent): void { 
   const ev = event; 

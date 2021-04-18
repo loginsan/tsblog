@@ -7,9 +7,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
 
-import { UserState } from '../../store/userReducer';
+import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncUpdateProfile } from '../../store/userActions';
-import { elemLoading, elemAlert, fieldErrorTip } from '../../common';
+import { elemLoading, elemAlert, fieldErrorTip, parseError } from '../../common';
 import { UserMenuProps } from '../Header/UserMenu/types';
 
 
@@ -20,6 +20,8 @@ interface FieldSet {
   bio?: string,
   image?: string,
 }
+
+type Keys = "username" | "password" | "email" | "bio" | "image";
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -44,7 +46,8 @@ const Profile: React.FC<UserMenuProps> = (props) => {
     register, 
     handleSubmit, 
     formState: { errors }, 
-    setValue 
+    setValue,
+    setError,
   } = useForm<FieldSet>({ resolver: yupResolver(schema) });
 
   const [submitted, setSubmitted] = useState(false);
@@ -75,6 +78,16 @@ const Profile: React.FC<UserMenuProps> = (props) => {
     setSubmitted(true);
   }
 
+  useEffect(() => {
+    if (error) {
+      const [, errorData] = error.split('|');
+      const errorList = parseError(errorData);
+      for (let i = 0; i < errorList.length; i++) {
+        const [key, value] = errorList[i].split(': ');
+        setError(key as Keys, { type: "manual", message: value });
+      }
+    }
+  }, [error, setError]);
 
   return (
     <section className="form">
@@ -174,14 +187,7 @@ const Profile: React.FC<UserMenuProps> = (props) => {
   )
 };
 
-const mapStateToProps = (state: {user: UserState}) => ({
-  loading: state.user.loading, 
-  error: state.user.error,
-  user: state.user.user,
-  isLogged: state.user.isLogged,
-});
-
-export default connect(mapStateToProps, {})(Profile);
+export default connect(mapUserStateToProps, {})(Profile);
 
 /*
 {

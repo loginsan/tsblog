@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore, useDispatch, connect } from 'react-redux';
 
@@ -6,9 +6,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-import { UserState } from '../../store/userReducer';
+import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncRegister } from '../../store/userActions';
-import { elemLoading, elemAlert, fieldErrorTip } from '../../common';
+import { elemLoading, elemAlert, fieldErrorTip, parseError } from '../../common';
 
 
 interface FieldSet {
@@ -18,6 +18,8 @@ interface FieldSet {
   repeatPassword: string,
   agreement: boolean,
 }
+
+type Keys = "password" | "username" | "email" | "repeatPassword" | "agreement";
 
 const schema = yup.object().shape({
   username: yup
@@ -37,6 +39,7 @@ const schema = yup.object().shape({
   agreement: yup.boolean().oneOf([true], 'Must check'),
 });
 
+
 const SignUp: React.FC = () => {
 
   const store = useStore();
@@ -50,7 +53,18 @@ const SignUp: React.FC = () => {
     formState: { errors }
   } = useForm<FieldSet>({ resolver: yupResolver(schema) });
 
-   function onSubmit(data: FieldSet) {
+  useEffect(() => {
+    if (error) {
+      const [, errorData] = error.split('|');
+      const errorList = parseError(errorData);
+      for (let i = 0; i < errorList.length; i++) {
+        const [key, value] = errorList[i].split(': ');
+        setError(key as Keys, { type: "manual", message: value });
+      }
+    }
+  }, [error, setError]);
+
+  function onSubmit(data: FieldSet) {
     // console.log(data);
     const userData = { 
       username: data.username, 
@@ -149,14 +163,7 @@ const SignUp: React.FC = () => {
   )
 };
 
-const mapStateToProps = (state: {user: UserState}) => ({
-  loading: state.user.loading, 
-  error: state.user.error,
-  user: state.user.user,
-  isLogged: state.user.isLogged,
-});
-
-export default connect(mapStateToProps, {})(SignUp);
+export default connect(mapUserStateToProps, {})(SignUp);
 
 
 // {"errors":

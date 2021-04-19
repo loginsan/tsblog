@@ -3,6 +3,7 @@ import api from '../services/APIService';
 import { 
   ArticlesData, 
   ArticleData,
+  CommentsData,
 } from '../types';
 import {
   LOAD_ARTICLES,
@@ -13,6 +14,9 @@ import {
   VIEW_ARTICLE,
   VIEW_ARTICLE_LOADING,
   VIEW_ARTICLE_ERROR,
+  FETCH_COMMENTS_LOADING,
+  FETCH_COMMENTS_ERROR,
+  FETCH_COMMENTS,
 } from './constants';
 
 type Api = typeof api;
@@ -59,6 +63,21 @@ interface ArticleTag {
   payload: string | null,
 }
 
+export interface CommentsView {
+  type: typeof FETCH_COMMENTS,
+  payload: CommentsData,
+}
+
+export interface CommentsLoading {
+  type: typeof FETCH_COMMENTS_LOADING,
+  payload: boolean,
+}
+
+export interface CommentsError {
+  type: typeof FETCH_COMMENTS_ERROR,
+  payload: string,
+}
+
 // export type ArticlesAction = ArticlesLoading|ArticlesError|
 //   ArticlesSuccess|PageNum;
 export type ArticlesAction = {
@@ -68,7 +87,7 @@ export type ArticlesAction = {
 // export type ArticleAction = ArticleLoading|ArticleError|ArticleView;
 export type ArticleAction = {
   type: string,
-  payload: boolean | string | ArticleData;
+  payload: boolean | string | ArticleData | CommentsData;
 };
 
 
@@ -111,6 +130,21 @@ export const setCurrentPage = (num: number): PageNum => ({
 export const setCurrentTag = (tag: string | null): ArticleTag => ({ 
   type: SET_CURRENT_TAG, 
   payload: tag,
+});
+
+export const commentsLoading = (flag: boolean): ArticleAction => ({ 
+  type: FETCH_COMMENTS_LOADING, 
+  payload: flag,
+});
+
+export const commentsError = (msg: string): ArticleAction => ({ 
+  type: FETCH_COMMENTS_ERROR, 
+  payload: msg,
+});
+
+export const commentsSuccess = (data: CommentsData): ArticleAction => ({
+  type: FETCH_COMMENTS,
+  payload: data,
 });
 
 
@@ -156,5 +190,28 @@ async function fetchArticle(
 export function asyncGetArticle(id: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchArticle(api, dispatch, id);
+  };
+}
+
+
+async function fetchComments(
+  service: Api, 
+  dispatch: Dispatch<ArticleAction>,
+  slug: string,
+  token: string
+) {
+
+  dispatch( commentsLoading(true) );
+  try {
+    const data: CommentsData = await service.getComments(slug, token);
+    dispatch( commentsSuccess(data) );
+  } catch (err) {
+    dispatch( commentsError(err.message) );
+  }
+}
+
+export function asyncGetComments(slug: string, token: string) {
+  return (dispatch: Dispatch<ArticleAction>) => {
+    fetchComments(api, dispatch, slug, token);
   };
 }

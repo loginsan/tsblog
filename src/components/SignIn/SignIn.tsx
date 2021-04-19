@@ -17,7 +17,7 @@ interface FieldSet {
   password: string
 }
 
-type Keys = "password" | "email";
+type Keys = keyof FieldSet; // "password" | "email"
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),

@@ -21,7 +21,7 @@ interface FieldSet {
   image?: string,
 }
 
-type Keys = "username" | "password" | "email" | "bio" | "image";
+type Keys = keyof FieldSet; // "username" | "password" | "email" | "bio" | "image";
 
 const schema = yup.object().shape({
   username: yup.string().required(),

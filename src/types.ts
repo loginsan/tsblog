@@ -48,3 +48,15 @@ export type ArticlesData = {
 export type UserData = {
   user: User,
 }
+
+export type ProfileData = {
+  profile: Profile,
+}
+
+export type PostComment = {
+  comment: Comment,
+}
+
+export type CommentsData = {
+  comments: Comment[],
+}

@@ -2,23 +2,30 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { connect, useStore, useDispatch } from 'react-redux';
-import { asyncGetArticle } from '../../store/articlesActions';
+import { useCookies } from 'react-cookie';
+import { asyncGetArticle, asyncGetComments } from '../../store/articlesActions';
 import { ArticleState } from '../../store/singleReducer';
-import { Article } from '../../types';
+import { Article, Comment } from '../../types';
+import CommentsList from '../CommentsList';
 import { formatDate, avatarFallback, placeTags, elemLoading, elemAlert } from '../../common';
 
 
-function renderArticleFull(props: Article): React.ReactNode {
+function renderArticleFull(
+  props: Article,
+  comments: Comment[],
+  token: string
+): React.ReactNode {
   const { slug, title, description, tagList, body, 
     updatedAt, favorited, favoritesCount, author } = props;
   const likeClass = `like${favorited? "" : " like_unset"}`;
+  const elemComments = <CommentsList data={comments} token={token} />;
   return (
   <article className="article article_full">
     {/* {<picture>{ randomArticleImage() }</picture>} */}
     <header className="article__head">
       <div className="article__info">
         <h2>
-          <Link className="article__title" to="/articles/">{title}</Link>
+          <Link className="article__title" to="/articles/" title={title}>{title}</Link>
           <Link to="/sign-up" className={likeClass} title={slug}>
             {favoritesCount}
           </Link>
@@ -27,7 +34,7 @@ function renderArticleFull(props: Article): React.ReactNode {
         <p className="article__excerpt">{description}</p>
       </div>
       <aside className="pub-info">
-        <Link to="/profile" className="author" title="Author">
+        <Link to={`/profiles/${author && author.username}`} className="author" title="Author">
           <span>
             { author && author.username }
             <time className="pub-date">{ formatDate(updatedAt) }</time>
@@ -55,6 +62,8 @@ function renderArticleFull(props: Article): React.ReactNode {
       <ReactMarkdown>
       { body || '' }
       </ReactMarkdown>
+      <hr />
+      { elemComments }
     </main>
   </article>
   )
@@ -68,15 +77,18 @@ interface ArticleViewProps {
 const ArticleView: React.FC<ArticleViewProps> = ({ id }) => {
   const store = useStore();
   const dispatch = useDispatch();
-  const { loading, error, article } = store.getState().view;
+  const { loading, error, article, comments } = store.getState().view;
+  const [cookies] = useCookies(['token']);
+  const userToken = cookies.token || '';
 
   useEffect(() => {
     dispatch( asyncGetArticle(id) );
-  }, [dispatch, id]);
+    dispatch( asyncGetComments(id, userToken) );
+  }, [dispatch, id, userToken]);
 
   const elemArticle = !loading && !error && (
     <>
-    { renderArticleFull(article) }
+    { renderArticleFull(article, comments, userToken) }
     </>
   );
 
@@ -93,6 +105,7 @@ const mapStateToProps = (state: {view: ArticleState}) => ({
   loading: state.view.loading, 
   error: state.view.error,
   article: state.view.article,
+  comments: state.view.comments,
 });
 
 // const mapDispatchToProps = (dispatchFn: Dispatch<ArticleAction>) => ({

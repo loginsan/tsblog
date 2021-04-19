@@ -3,6 +3,8 @@ import {
   ArticleData, 
   UserData,
   User,
+  ProfileData,
+  CommentsData,
 } from '../types';
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -29,6 +31,11 @@ export async function http<T>(
       'Authorization': `Token ${token}`
     }
   }
+  request.headers = {
+    ...request.headers,
+    'Access-Control-Allow-Origin': `https://conduit.productionready.io`
+  }
+  // Access-Control-Allow-Origin: https://conduit.productionready.io
   const response = await fetch(url, request);
   if (!response.ok) {
     const errorsData: string = await response.text();
@@ -100,6 +107,18 @@ class APIService {
     const url = this.endURL(`/users`);
     const data = await http<UserData>(url, '', 'POST', value);
     return data as UserData;
+  }
+
+  async getProfileRequest(username: string): Promise<ProfileData> {
+    const url = this.endURL(`/profiles/${username}`);
+    const data = await http<ProfileData>(url);
+    return data as ProfileData;
+  }
+
+  async getComments(slug: string, token: string = ''): Promise<CommentsData> {
+    const url = this.endURL(`/articles/${slug}/comments`);
+    const data = await http<CommentsData>(url, token);
+    return data as CommentsData;
   }
 
 }

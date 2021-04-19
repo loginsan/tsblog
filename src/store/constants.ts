@@ -20,3 +20,11 @@ export const LOGOUT_USER: string = "LOGOUT_USER";
 export const UPDATE_USER: string = "UPDATE_USER";
 export const REGISTER_USER: string = "REGISTER_USER";
 export const GET_CURRENT_USER: string = "GET_CURRENT_USER";
+
+export const FETCH_PROFILE_LOADING: string = "FETCH_PROFILE_LOADING";
+export const FETCH_PROFILE_ERROR: string = "FETCH_PROFILE_ERROR";
+export const FETCH_PROFILE: string = "FETCH_PROFILE";
+
+export const FETCH_COMMENTS_LOADING: string = "FETCH_COMMENTS_LOADING";
+export const FETCH_COMMENTS_ERROR: string = "FETCH_COMMENTS_ERROR";
+export const FETCH_COMMENTS: string = "FETCH_COMMENTS";

@@ -27,7 +27,7 @@ function renderArticleShort(props: Article): React.ReactNode {
         <p className="article__excerpt">{description}</p>
       </div>
       <aside className="pub-info">
-        <Link to="/profile" className="author" title="Author">
+        <Link to={`/profiles/${ author && author.username }`} className="author" title="Author">
           <span>
             { author && author.username }
             <time className="pub-date">{ formatDate(updatedAt) }</time>

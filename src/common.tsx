@@ -6,7 +6,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import avatarDefault from './assets/user-avatar.png';
 
 
-export function formatDate(dateStr?: string, locale: string = "en"): string {
+export function formatDate(dateStr?: string, locale: string = 'en'): string {
   const date = dateStr? new Date(dateStr) : new Date();
   const fd = new Intl.DateTimeFormat(
     locale, 
@@ -64,7 +64,16 @@ export function parseError(data: string): string[] {
 
 export function elemAlert(error: string): React.ReactNode {
   if (!error) return null;
-  const [status, data] = error.split("|");
+  if (error.indexOf('|') === -1) {
+    return (<Alert 
+      className="alert-box" 
+      message="Error occurred" 
+      description={ error } 
+      type="error" 
+      showIcon 
+    />)
+  }
+  const [status, data] = error.split('|');
   const list = parseError(data); 
   return (
     error && 

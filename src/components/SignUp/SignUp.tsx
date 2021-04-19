@@ -19,7 +19,7 @@ interface FieldSet {
   agreement: boolean,
 }
 
-type Keys = "password" | "username" | "email" | "repeatPassword" | "agreement";
+type Keys = keyof FieldSet; // "password" | "username" | "email" | "repeatPassword" | "agreement";
 
 const schema = yup.object().shape({
   username: yup

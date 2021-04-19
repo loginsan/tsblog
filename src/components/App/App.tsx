@@ -11,6 +11,7 @@ import ArticleList from '../ArticleList';
 import SignUp from '../SignUp';
 import SignIn from '../SignIn';
 import Profile from '../Profile';
+import Profiles from '../Profiles';
 import Logout from '../Logout';
 import EditArticle from '../EditArticle';
 import NewArticle from '../NewArticle';
@@ -66,6 +67,12 @@ const App: React.FC = () => {
             <Route path="/profile">
               <Profile />
             </Route>
+            <Route path="/profiles/:username" exact 
+              render={({ match }) => {
+                const { username } = match.params;
+                return <Profiles username={ username } />
+              }}
+            />
             <Route path="/logout">
               <Logout />
             </Route>

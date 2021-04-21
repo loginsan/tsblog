@@ -17,6 +17,9 @@ import {
   FETCH_COMMENTS_LOADING,
   FETCH_COMMENTS_ERROR,
   FETCH_COMMENTS,
+  FAVORITE_ARTICLE_FETCHING,
+  FAVORITE_ARTICLE_ERROR,
+  FAVORITE_ARTICLE,
 } from './constants';
 
 type Api = typeof api;
@@ -78,11 +81,27 @@ export interface CommentsError {
   payload: string,
 }
 
+export interface FavoriteFetching {
+  type: typeof FAVORITE_ARTICLE_FETCHING,
+  payload: boolean,
+}
+
+export interface FavoriteError {
+  type: typeof FAVORITE_ARTICLE_ERROR,
+  payload: string,
+}
+
+export interface FavoriteUpdate {
+  type: typeof FAVORITE_ARTICLE,
+  payload: ArticleData,
+}
+
+
 // export type ArticlesAction = ArticlesLoading|ArticlesError|
 //   ArticlesSuccess|PageNum;
 export type ArticlesAction = {
   type: string,
-  payload: boolean | string | number | ArticlesData;
+  payload: boolean | string | number | ArticlesData | ArticleData;
 };
 // export type ArticleAction = ArticleLoading|ArticleError|ArticleView;
 export type ArticleAction = {
@@ -92,17 +111,17 @@ export type ArticleAction = {
 
 
 // Action Creators
-export const setArticlesLoading = (flag: boolean): ArticlesAction => ({ 
+export const articlesListLoading = (flag: boolean): ArticlesAction => ({ 
   type: LOAD_ARTICLES_LOADING, 
   payload: flag,
 });
 
-export const setArticlesError = (msg: string): ArticlesAction => ({ 
+export const articlesListError = (msg: string): ArticlesAction => ({ 
   type: LOAD_ARTICLES_ERROR, 
   payload: msg,
 });
 
-export const setArticles = (data: ArticlesData): ArticlesAction => ({
+export const articlesListSuccess = (data: ArticlesData): ArticlesAction => ({
   type: LOAD_ARTICLES,
   payload: data,
 });
@@ -147,27 +166,44 @@ export const commentsSuccess = (data: CommentsData): ArticleAction => ({
   payload: data,
 });
 
+export const favoriteFetching = (flag: boolean): ArticleAction => ({
+  type: FAVORITE_ARTICLE_FETCHING,
+  payload: flag,
+});
+
+export const favoriteError = (msg: string): ArticleAction => ({
+  type: FAVORITE_ARTICLE_ERROR,
+  payload: msg,
+});
+
+export const favoriteUpdate = (data: ArticleData): ArticleAction => ({
+  type: FAVORITE_ARTICLE,
+  payload: data,
+});
+
+
 
 // ASYNC ACTIONS
 
 async function fetchArticles(
   service: Api, 
   dispatch: Dispatch<ArticlesAction>, 
-  page: number = 1
+  page: number = 1,
+  token: string
 ) {
 
-  dispatch( setArticlesLoading(true) );
+  dispatch( articlesListLoading(true) );
   try {
-    const data: ArticlesData = await service.getArticles(page);
-    dispatch( setArticles(data) );
+    const data: ArticlesData = await service.getArticles(page, token);
+    dispatch( articlesListSuccess(data) );
   } catch (err) {
-    dispatch( setArticlesError(err.message) );
+    dispatch( articlesListError(err.message) );
   }
 }
 
-export function asyncGetArticles(page: number = 1) {
+export function asyncGetArticles(page: number = 1, token: string) {
   return (dispatch: Dispatch<ArticlesAction>) => {
-    fetchArticles(api, dispatch, page);
+    fetchArticles(api, dispatch, page, token);
   };
 }
 
@@ -175,21 +211,22 @@ export function asyncGetArticles(page: number = 1) {
 async function fetchArticle(
   service: Api, 
   dispatch: Dispatch<ArticleAction>, 
-  id: string
+  id: string,
+  token: string
 ) {
 
   dispatch( viewArticleLoading(true) );
   try {
-    const data: ArticleData = await service.getArticle(id);
+    const data: ArticleData = await service.getArticle(id, token);
     dispatch( viewArticle(data) );
   } catch (err) {
     dispatch( viewArticleError(err.message) );
   }
 }
 
-export function asyncGetArticle(id: string) {
+export function asyncGetArticle(id: string, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
-    fetchArticle(api, dispatch, id);
+    fetchArticle(api, dispatch, id, token);
   };
 }
 
@@ -215,3 +252,29 @@ export function asyncGetComments(slug: string, token: string) {
     fetchComments(api, dispatch, slug, token);
   };
 }
+
+
+async function fetchFavorite(
+  service: Api, 
+  dispatch: Dispatch<ArticleAction>,
+  slug: string,
+  flag: boolean,
+  token: string
+) {
+
+  dispatch( favoriteFetching(true) );
+  try {
+    const data: ArticleData = await service.setFavorite(slug, flag, token);
+    dispatch( favoriteUpdate(data) );
+  } catch (err) {
+    dispatch( favoriteError(err.message) );
+  }
+}
+
+export function asyncSetFavorite(slug: string, flag: boolean, token: string) {
+  return (dispatch: Dispatch<ArticleAction>) => {
+    fetchFavorite(api, dispatch, slug, flag, token);
+  };
+}
+
+

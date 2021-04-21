@@ -80,7 +80,7 @@ async function fetchAuth(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserData = await service.authUserRequest(email, pass);
+    const data: UserData = await service.authUser(email, pass);
     dispatch( loginUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );
@@ -112,7 +112,7 @@ async function fetchUpdateUser(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserData = await service.updateUserRequest(token, user);
+    const data: UserData = await service.updateUser(token, user);
     dispatch( updateUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );
@@ -138,7 +138,7 @@ async function fetchRegisterUser(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserData = await service.registerUserRequest(user);
+    const data: UserData = await service.registerUser(user);
     dispatch( registerUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );
@@ -164,7 +164,7 @@ async function fetchCurrentUser(
 ) {
   dispatch( fetchUserLoading(true) );
   try {
-    const data: UserData = await service.getUserRequest(token);
+    const data: UserData = await service.getUser(token);
     dispatch( getCurrentUser(data) );
   } catch (err) {
     dispatch( fetchUserError(err.message) );

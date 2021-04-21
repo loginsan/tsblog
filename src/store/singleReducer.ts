@@ -7,6 +7,9 @@ import {
   FETCH_COMMENTS_LOADING,
   FETCH_COMMENTS_ERROR,
   FETCH_COMMENTS,
+  FAVORITE_ARTICLE_FETCHING,
+  FAVORITE_ARTICLE_ERROR,
+  FAVORITE_ARTICLE,
 } from './constants';
 
 
@@ -17,6 +20,8 @@ export interface ArticleState {
   comments: Comment[],
   commentsLoading: boolean,
   commentsError: string,
+  favoriteFetching: boolean,
+  favoriteError: string,
 }
 
 const initialState: ArticleState = {
@@ -26,6 +31,8 @@ const initialState: ArticleState = {
   comments: [],
   commentsLoading: true,
   commentsError: '',
+  favoriteFetching: false,
+  favoriteError: '',
 };
 
 export default function view(
@@ -75,6 +82,28 @@ export default function view(
         commentsLoading: false,
         comments: (action.payload as CommentsData).comments,
       };
+    
+    case FAVORITE_ARTICLE_FETCHING:
+      return {
+        ...state,
+        favoriteError: '',
+        favoriteFetching: action.payload as boolean,
+      };
+    
+    case FAVORITE_ARTICLE_ERROR:
+      return {
+        ...state,
+        favoriteError: action.payload as string,
+        favoriteFetching: false,
+      };
+    
+    case FAVORITE_ARTICLE:
+      return {
+        ...state,
+        favoriteFetching: false,
+        article: (action.payload as ArticleData).article,
+      };
+    
 
     default:
       return state;

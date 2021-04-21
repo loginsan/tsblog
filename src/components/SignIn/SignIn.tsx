@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useStore, useDispatch, connect } from 'react-redux';
+import { useDispatch, connect } from 'react-redux';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,7 +9,8 @@ import { useCookies } from 'react-cookie';
 
 import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncGetAuth } from '../../store/userActions';
-import { elemLoading, elemAlert, fieldErrorTip, parseError } from '../../common';
+import * as kit from '../../common';
+import { UserMenuProps } from '../Header/UserMenu/types';
 
 
 interface FieldSet {
@@ -17,7 +18,7 @@ interface FieldSet {
   password: string
 }
 
-type Keys = keyof FieldSet; // "password" | "email"
+type Keys = keyof FieldSet;
 
 const schema = yup.object().shape({
   email: yup.string().email().required(),
@@ -25,12 +26,12 @@ const schema = yup.object().shape({
 });
 
 
-const SignIn: React.FC = () => {
-
-  const store = useStore();
+const SignIn: React.FC<UserMenuProps> = (props) => {
+  const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
-  const { loading, error, user, isLogged } = store.getState().user;
   const [cookies, setCookie] = useCookies(['token']);
+
+  kit.setPageTitle(`Sign-In Form`);
 
   useEffect(() => {
     if (user.token && !cookies.token) {
@@ -54,7 +55,7 @@ const SignIn: React.FC = () => {
   useEffect(() => {
     if (error) {
       const [, errorData] = error.split('|');
-      const errorList = parseError(errorData);
+      const errorList = kit.parseError(errorData);
       for (let i = 0; i < errorList.length; i++) {
         const [key, value] = errorList[i].split(': ');
         if (key.includes(" or ")) {
@@ -69,8 +70,8 @@ const SignIn: React.FC = () => {
 
   return (
     <section className="form">
-      { elemLoading(loading) }
-      { elemAlert(error) }
+      { kit.elemLoading(loading) }
+      { kit.elemAlert(error) }
       { !loading && !error && isLogged
         ? (<>
           <h2>{`Welcome, ${user.username}!`}</h2>
@@ -78,40 +79,33 @@ const SignIn: React.FC = () => {
         </>)
         : (<>
           <h2 className="form__title">Sign In</h2>
-          <form 
-            className="form__body"
-            onSubmit={ handleSubmit(onSubmit) }
-          >
+          <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
             <ul className="form__field-list nolist">
               <li className="form__field">
                 <label className="label" htmlFor="email">
                   Email address
                 </label>
-                <input type="email"
+                <input type="email" id="email"
                   className={`control control_input${errors.email? " error" : ""}`}
-                  id="email"
                   placeholder="Email address"
                   {...register("email")}
                 />
-                { fieldErrorTip(errors.email) }
+                { kit.fieldErrorTip(errors.email) }
               </li>
               <li className="form__field">
                 <label className="label" htmlFor="password">
                   Password
                 </label>
-                <input type="password"
+                <input type="password" id="password"
                   className={`control control_input${errors.password? " error" : ""}`}
-                  id="password"
                   placeholder="Password"
                   {...register("password")}
                 />
-                { fieldErrorTip(errors.password) }
+                { kit.fieldErrorTip(errors.password) }
               </li>
               
               <li className="form__field">
-                <button type="submit" className="btn_submit">
-                  Login
-                </button>
+                <button type="submit" className="btn_submit">Login</button>
                 <span className="note_foot">
                   Don't have an account? <Link to="/sign-up">Sign Up</Link>.
                 </span>
@@ -125,3 +119,4 @@ const SignIn: React.FC = () => {
 };
 
 export default connect(mapUserStateToProps, {})(SignIn);
+// export default SignIn;

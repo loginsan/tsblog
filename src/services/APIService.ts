@@ -1,4 +1,5 @@
 import { 
+  Article,
   ArticlesData, 
   ArticleData, 
   UserData,
@@ -8,7 +9,7 @@ import {
 } from '../types';
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE';
-type Payload = UserData;
+type Payload = UserData | ArticleData;
 
 export async function http<T>(
   url: string, 
@@ -52,7 +53,7 @@ class APIService {
 
   limit = 20;
 
-  from = 240000;
+  from = 0; // 240000;
 
   endURL(endpoint: string, params: string = ''): string {
     const str = params? `?${params}` : '';
@@ -76,49 +77,94 @@ class APIService {
     return data as ArticlesData;
   }
 
-  async getArticle(slug: string): Promise<ArticleData> {
+  async getArticle(slug: string, token: string = ''): Promise<ArticleData> {
     const url = this.endURL(`/articles/${slug}`);
-    const data = await http<ArticleData>(url);
+    const data = await http<ArticleData>(url, token);
     return data as ArticleData;
   }
 
-  async authUserRequest(email: string, password: string): Promise<UserData> {
+  async authUser(email: string, password: string): Promise<UserData> {
     const value: UserData = { user: { email, password } };
     const url = this.endURL(`/users/login`);
     const data = await http<UserData>(url, '', 'POST', value);
     return data as UserData;
   }
 
-  async updateUserRequest(token: string, user: User): Promise<UserData> {
+  async updateUser(token: string, user: User): Promise<UserData> {
     const value: UserData = { user };
     const url = this.endURL(`/user`);
     const data = await http<UserData>(url, token, 'PUT', value);
     return data as UserData;
   }
 
-  async getUserRequest(token: string): Promise<UserData> {
+  async getUser(token: string): Promise<UserData> {
     const url = this.endURL(`/user`);
     const data = await http<UserData>(url, token);
     return data as UserData;
   }
 
-  async registerUserRequest(user: User): Promise<UserData> {
+  async registerUser(user: User): Promise<UserData> {
     const value: UserData = { user };
     const url = this.endURL(`/users`);
     const data = await http<UserData>(url, '', 'POST', value);
     return data as UserData;
   }
 
-  async getProfileRequest(username: string): Promise<ProfileData> {
-    const url = this.endURL(`/profiles/${username}`);
-    const data = await http<ProfileData>(url);
+  async getProfile(username: string, token: string): Promise<ProfileData> {
+    const url = this.endURL(`/profiles/${encodeURIComponent(username)}`);
+    const data = await http<ProfileData>(url, token);
     return data as ProfileData;
   }
 
-  async getComments(slug: string, token: string = ''): Promise<CommentsData> {
+  async getComments(slug: string, token: string): Promise<CommentsData> {
     const url = this.endURL(`/articles/${slug}/comments`);
     const data = await http<CommentsData>(url, token);
     return data as CommentsData;
+  }
+
+  async setFavorite(
+    slug: string, 
+    flag: boolean,
+    token: string 
+  ): Promise<ArticleData> {
+    const url = this.endURL(`/articles/${slug}/favorite`);
+    const data = await http<ArticleData>(url, token, flag? 'DELETE' : 'POST');
+    return data as ArticleData;
+  }
+
+  async createArticle(article: Article, token: string): Promise<ArticleData> {
+    const value: ArticleData = { article };
+    const url = this.endURL(`/articles`);
+    const data = await http<ArticleData>(url, token, 'POST', value);
+    return data as ArticleData;
+  }
+
+  async updateArticle(
+    slug: string,
+    article: Article,
+    token: string
+  ): Promise<ArticleData> {
+    const value: ArticleData = { article };
+    const url = this.endURL(`/articles/${slug}`);
+    const data = await http<ArticleData>(url, token, 'PUT', value);
+    return data as ArticleData;
+  }
+
+  async deleteArticle(slug: string, token: string): Promise<ArticleData> {
+    const url = this.endURL(`/articles/${slug}`);
+    const data = await http<ArticleData>(url, token, 'DELETE');
+    return data as ArticleData;
+  }
+
+  async getAuthorArticles(
+    author: string,
+    token: string = ''
+  ): Promise<ArticlesData> {
+    const url = this.endURL('/articles', 
+      `limit=1000&offset=0&author=${author}`
+    );
+    const data = await http<ArticlesData>(url, token);
+    return data as ArticlesData;
   }
 
 }

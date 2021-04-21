@@ -1,10 +1,13 @@
-import { Article, ArticlesData } from '../types';
+import { Article, ArticlesData, ArticleData } from '../types';
 import { ArticlesAction } from './articlesActions';
 import {
   LOAD_ARTICLES,
   LOAD_ARTICLES_ERROR,
   LOAD_ARTICLES_LOADING,
   SET_CURRENT_PAGE,
+  FAVORITE_ARTICLE_FETCHING,
+  FAVORITE_ARTICLE_ERROR,
+  FAVORITE_ARTICLE,
 } from './constants';
 
 
@@ -15,6 +18,8 @@ export interface ArticlesState {
   list: Article[],
   total: number,
   tag: string | null,
+  favoriteFetching: boolean,
+  favoriteError: string,
 }
 
 const initialState: ArticlesState = {
@@ -24,6 +29,8 @@ const initialState: ArticlesState = {
   list: [],
   total: 0,
   tag: null,
+  favoriteFetching: false,
+  favoriteError: '',
 };
 
 export default function articles(
@@ -58,6 +65,39 @@ export default function articles(
     
     case SET_CURRENT_PAGE:
       return { ...state, page: action.payload as number };
+    
+    case FAVORITE_ARTICLE_FETCHING:
+      return {
+        ...state,
+        favoriteError: '',
+        favoriteFetching: action.payload as boolean,
+      };
+    
+    case FAVORITE_ARTICLE_ERROR:
+      return {
+        ...state,
+        favoriteError: action.payload as string,
+        favoriteFetching: false,
+      };
+    
+    case FAVORITE_ARTICLE: {
+      const updated = (action.payload as ArticleData).article;
+      const { slug, favorited, favoritesCount } = updated;
+      return {
+        ...state,
+        favoriteFetching: false,
+        list: state.list.map(elem => {
+          if (elem.slug === slug) {
+            return {
+              ...elem,
+              favorited,
+              favoritesCount,
+            }
+          }
+          return elem;
+        }),
+      };
+    }
 
     default:
       return state;

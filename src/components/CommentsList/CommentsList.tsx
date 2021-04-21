@@ -13,7 +13,7 @@ interface CommentsProps {
 function renderComments(data: Comment[]): React.ReactNode {
   if (data.length === 0) return null;
   const items = data.map(elem => {
-    const { id, createdAt, updatedAt, body, author } = elem;
+    const { id, updatedAt, body, author } = elem;
     const key = `comment-${id}-${updatedAt}`;
     return (<li key={key} className="long-text">
       <em>{ body }</em>, &mdash;&nbsp; 
@@ -33,7 +33,10 @@ const CommentsList: React.FC<CommentsProps> = ({ data, token = '' }) => {
   return (
     <div>
       <h3>{ data.length > 0? 'Comments:' : 'No comments yet…' }</h3>
-      { token !== '' ? (<span className="long-text">{ token }</span>) : '' }
+      { token !== '' && (
+        <sup className="long-text">
+          Authenticated users can post comments…
+        </sup>) }
       
       { elemLoading(commentsLoading) }
       { elemAlert(commentsError) }

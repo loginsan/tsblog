@@ -1,14 +1,28 @@
 import React, { Dispatch, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, connect } from 'react-redux';
+import { useCookies } from 'react-cookie';
 import { Pagination } from 'antd';
-import { asyncGetArticles, setCurrentPage, ArticlesAction } from '../../store/articlesActions';
-import { formatDate, avatarFallback, placeTags, elemLoading, elemAlert } from '../../common';
-import { Article } from '../../types';
+import { asyncGetArticles, setCurrentPage, ArticlesAction, asyncSetFavorite } from '../../store/articlesActions';
 import { ArticlesState } from '../../store/articlesReducer';
+import { Article } from '../../types';
+import * as kit from '../../common';
 
 
-function renderArticleShort(props: Article): React.ReactNode {
+type ClickLink = (
+  evt: React.MouseEvent<HTMLAnchorElement>,
+  slug: string | undefined,
+  favorited: boolean | undefined,
+  token: string
+) => void;
+
+
+function renderArticleShort(
+  props: Article,
+  token: string,
+  favorite: ClickLink
+): React.ReactNode {
+
   const { slug, title, description, tagList, 
     updatedAt, favorited, favoritesCount, author } = props;
   const likeClass = `like${favorited? "" : " like_unset"}`;
@@ -19,22 +33,26 @@ function renderArticleShort(props: Article): React.ReactNode {
       <div className="article__info">
         <h2>
           <Link className="article__title" to={`/articles/${slug}`}>{title}</Link>
-          <Link to="/sign-up" className={likeClass} title={slug}>
+          <Link to="/sign-up" 
+            className={likeClass} 
+            title={favorited? 'Remove from Favorite' : 'Add to Favorite'}
+            onClick={(evt) => favorite(evt, slug, favorited, token)}
+          >
             {favoritesCount}
           </Link>
         </h2>
-        { placeTags(tagList) }
+        { kit.placeTags(tagList) }
         <p className="article__excerpt">{description}</p>
       </div>
       <aside className="pub-info">
-        <Link to={`/profiles/${ author && author.username }`} className="author" title="Author">
+        <Link to={`/profiles/${ encodeURI(author && author.username || '') }`} className="author" title="Author">
           <span>
             { author && author.username }
-            <time className="pub-date">{ formatDate(updatedAt) }</time>
+            <time className="pub-date">{ kit.formatDate(updatedAt) }</time>
           </span>
           <img src={ author && author.image } title={ author && author.bio } 
             alt="Avatar" className="avatar"
-            onError={ avatarFallback }
+            onError={ kit.avatarFallback }
           />
         </Link>
       </aside>
@@ -57,16 +75,32 @@ interface ArticleListProps {
 const ArticleList: React.FC<ArticleListProps> = (props) => {
   const { loading, error, page, list, total, pageChange } = props;
   const dispatch = useDispatch();
+  const [cookies] = useCookies(['token']);
+  const userToken = cookies.token || '';
+
+  function toggleFavorite(
+    evt: React.MouseEvent<HTMLAnchorElement>,
+    slug: string | undefined,
+    favorited: boolean | undefined,
+    token: string
+  ) {
+    if (token) {
+      evt.preventDefault();
+      // console.log(slug, favorited);
+      dispatch( asyncSetFavorite(slug || '', !!favorited, token) );
+    }
+  }
   
   useEffect(() => {
-    dispatch( asyncGetArticles(page) );
-  }, [dispatch, page]);
+    kit.setPageTitle(`Articles, page ${page}`);
+    dispatch( asyncGetArticles(page, userToken) );
+  }, [dispatch, page, userToken]);
 
   const articles = !loading && !error && (
     <ul className="article-list nolist">
       { list.map(article => (
           <li key={ article.slug } className="article article_short">
-            { renderArticleShort(article) }
+            { renderArticleShort(article, userToken, toggleFavorite) }
           </li>
         ))
       }        
@@ -85,8 +119,8 @@ const ArticleList: React.FC<ArticleListProps> = (props) => {
 
   return (
     <section className="page">
-      { elemLoading(loading) }
-      { elemAlert(error) }
+      { kit.elemLoading(loading) }
+      { kit.elemAlert(error) }
       { articles }
       { elemPager }
     </section>

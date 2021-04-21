@@ -53,6 +53,7 @@ export function elemLoading(loading: boolean): React.ReactNode {
 }
 
 export function parseError(data: string): string[] {
+  // console.log(`parseError: ${data}`);
   const container = JSON.parse(data);
   const obj = container.errors;
   const messages = [];
@@ -64,6 +65,7 @@ export function parseError(data: string): string[] {
 
 export function elemAlert(error: string): React.ReactNode {
   if (!error) return null;
+  // console.log(`elemAlert: ${error}`);
   if (error.indexOf('|') === -1) {
     return (<Alert 
       className="alert-box" 
@@ -74,6 +76,15 @@ export function elemAlert(error: string): React.ReactNode {
     />)
   }
   const [status, data] = error.split('|');
+  if (status === "404") {
+    return (<Alert 
+      className="alert-box" 
+      message="No resource returned (code 404)" 
+      description="Mario, our Princess is in another castle…"
+      type="error" 
+      showIcon 
+    />)
+  }
   const list = parseError(data); 
   return (
     error && 
@@ -93,4 +104,9 @@ export function fieldErrorTip(error: FieldError | undefined): React.ReactNode {
       { error?.message }
     </span>
   )
+}
+
+export function setPageTitle(str: string | undefined): void {
+  const cut = (str || '').trim().substr(0, 119);
+  document.title = `TS Blog. ${cut}`;
 }

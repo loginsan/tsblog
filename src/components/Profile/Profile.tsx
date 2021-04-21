@@ -9,7 +9,7 @@ import { useCookies } from 'react-cookie';
 
 import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncUpdateProfile } from '../../store/userActions';
-import { elemLoading, elemAlert, fieldErrorTip, parseError } from '../../common';
+import * as kit from '../../common';
 import { UserMenuProps } from '../Header/UserMenu/types';
 
 
@@ -21,7 +21,7 @@ interface FieldSet {
   image?: string,
 }
 
-type Keys = keyof FieldSet; // "username" | "password" | "email" | "bio" | "image";
+type Keys = keyof FieldSet;
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -40,6 +40,8 @@ const schema = yup.object().shape({
 const Profile: React.FC<UserMenuProps> = (props) => {
   const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
+
+  kit.setPageTitle(`Edit user profile Form`);
 
   const [cookies] = useCookies(['token']);
   const { 
@@ -81,7 +83,7 @@ const Profile: React.FC<UserMenuProps> = (props) => {
   useEffect(() => {
     if (error) {
       const [, errorData] = error.split('|');
-      const errorList = parseError(errorData);
+      const errorList = kit.parseError(errorData);
       for (let i = 0; i < errorList.length; i++) {
         const [key, value] = errorList[i].split(': ');
         setError(key as Keys, { type: "manual", message: value });
@@ -91,8 +93,8 @@ const Profile: React.FC<UserMenuProps> = (props) => {
 
   return (
     <section className="form">
-      { elemLoading(loading) }
-      { elemAlert(error) }
+      { kit.elemLoading(loading) }
+      { kit.elemAlert(error) }
       { !isLogged && !cookies.token && (<>
           <h2>Access denied</h2>
           <p className="long-text">You must sign-in first</p>
@@ -112,72 +114,61 @@ const Profile: React.FC<UserMenuProps> = (props) => {
               <label className="label" htmlFor="username">
                 Username
               </label>
-              <input type="text"
+              <input type="text" id="username"
                 className={`control control_input${errors.username? " error" : ""}`}
-                id="username"
                 placeholder="Username"
-                autoComplete="off"
                 {...register("username")}
               />
-              { fieldErrorTip(errors.username) }
+              { kit.fieldErrorTip(errors.username) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="email">
                 Email address
               </label>
-              <input type="email"
+              <input type="email" id="email"
                 className={`control control_input${errors.email? " error" : ""}`}
-                id="email"
                 placeholder="Email address"
-                autoComplete="off"
                 {...register("email")}
               />
-              { fieldErrorTip(errors.email) }
+              { kit.fieldErrorTip(errors.email) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="password">
                 New password
               </label>
-              <input type="password"
+              <input type="password" id="password"
                 className={`control control_input${errors.password? " error" : ""}`}
-                id="password"
                 placeholder="New password"
                 {...register("password")}
               />
-              { fieldErrorTip(errors.password) }
+              { kit.fieldErrorTip(errors.password) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="bio">
                 Bio
               </label>
-              <textarea
+              <textarea id="bio"
                 className={`control control_textarea${errors.bio? " error" : ""}`}
-                id="bio"
-                cols={30}
-                rows={5}
+                cols={30} rows={5}
                 placeholder="Bio"
                 {...register("bio")}
               />        
-              { fieldErrorTip(errors.bio) }
+              { kit.fieldErrorTip(errors.bio) }
             </li>
             <li className="form__field">
               <label className="label" htmlFor="image">
                 Avatar image (url)
               </label>
-              <input type="text"
+              <input type="text" id="image"
                 className={`control control_input${errors.image? " error" : ""}`}
-                id="image"
                 placeholder="Avatar image"
-                autoComplete="off"
                 {...register("image")}
               />
-              { fieldErrorTip(errors.image) }
+              { kit.fieldErrorTip(errors.image) }
             </li>
             
             <li className="form__field">
-              <button type="submit" className="btn_submit">
-                Save
-              </button>
+              <button type="submit" className="btn_submit">Save</button>
             </li>
           </ul>
           </form>
@@ -188,25 +179,3 @@ const Profile: React.FC<UserMenuProps> = (props) => {
 };
 
 export default connect(mapUserStateToProps, {})(Profile);
-
-/*
-{
-  "errors": {
-    "password": ["is too short (minimum is 8 characters)"]
-  }
-}
-{"errors":{"email or password":["is invalid"]}}
-
-{
-  "user": {
-    "id": 155730,
-    "email": "linsykt@gmail.com",
-    "createdAt": "2021-04-01T22:27:50.073Z",
-    "updatedAt": "2021-04-13T23:36:47.013Z",
-    "username": "Yoshy Lin",
-    "bio": "Trying the best i can",
-    "image": "https://cdn.pixabay.com/photo/2016/03/31/19/58/avatar-1295429_960_720.png",
-    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MTU1NzMwLCJ1c2VybmFtZSI6Illvc2h5IExpbiIsImV4cCI6MTYyMzU0MTAwN30.onCIlniPAlp55X8S1NliG9BozFODRLC8Mk1J9dL0igQ"
-  }
-}
-*/

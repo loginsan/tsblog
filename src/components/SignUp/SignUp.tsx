@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useStore, useDispatch, connect } from 'react-redux';
+import { useDispatch, connect } from 'react-redux';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,7 +8,8 @@ import * as yup from 'yup';
 
 import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncRegister } from '../../store/userActions';
-import { elemLoading, elemAlert, fieldErrorTip, parseError } from '../../common';
+import * as kit from '../../common';
+import { UserMenuProps } from '../Header/UserMenu/types';
 
 
 interface FieldSet {
@@ -19,7 +20,7 @@ interface FieldSet {
   agreement: boolean,
 }
 
-type Keys = keyof FieldSet; // "password" | "username" | "email" | "repeatPassword" | "agreement";
+type Keys = keyof FieldSet;
 
 const schema = yup.object().shape({
   username: yup
@@ -40,11 +41,11 @@ const schema = yup.object().shape({
 });
 
 
-const SignUp: React.FC = () => {
-
-  const store = useStore();
+const SignUp: React.FC<UserMenuProps> = (props) => {
+  const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
-  const { loading, error, user, isLogged } = store.getState().user;
+
+  kit.setPageTitle(`Sign-Up Form`);
 
   const {
     register,
@@ -56,7 +57,7 @@ const SignUp: React.FC = () => {
   useEffect(() => {
     if (error) {
       const [, errorData] = error.split('|');
-      const errorList = parseError(errorData);
+      const errorList = kit.parseError(errorData);
       for (let i = 0; i < errorList.length; i++) {
         const [key, value] = errorList[i].split(': ');
         setError(key as Keys, { type: "manual", message: value });
@@ -76,8 +77,8 @@ const SignUp: React.FC = () => {
 
   return (
     <section className="form">
-      { elemLoading(loading) }
-      { elemAlert(error) }
+      { kit.elemLoading(loading) }
+      { kit.elemAlert(error) }
       { !loading && !error && isLogged
         ? (<>
             <h2>{`Welcome, ${user.username}!`}</h2>
@@ -91,65 +92,58 @@ const SignUp: React.FC = () => {
                   <label className="label" htmlFor="username">
                     Username
                   </label>
-                  <input type="text"
+                  <input type="text" id="username"
                     className={`control control_input${errors.username? " error" : ""}`}
-                    id="username"
                     placeholder="Username"
                     {...register("username")}
                   />
-                  { fieldErrorTip(errors.username) }
+                  { kit.fieldErrorTip(errors.username) }
                 </li>
                 <li className="form__field">
                   <label className="label" htmlFor="email">
                     Email address
                   </label>
-                  <input type="email"
+                  <input type="email" id="email"
                     className={`control control_input${errors.email? " error" : ""}`}
-                    id="email"
                     placeholder="Email address"
                     {...register("email")}
                   />
-                  { fieldErrorTip(errors.email) }
+                  { kit.fieldErrorTip(errors.email) }
                 </li>
                 <li className="form__field">
                   <label className="label" htmlFor="password">
                     Password
                   </label>
-                  <input type="password"
+                  <input type="password" id="password"
                     className={`control control_input${errors.password? " error" : ""}`}
-                    id="password"
                     placeholder="Password"
                     {...register("password", { required: true })}
                   />
-                  { fieldErrorTip(errors.password) }
+                  { kit.fieldErrorTip(errors.password) }
                 </li>
                 <li className="form__field">
                   <label className="label" htmlFor="repeatPassword">
                     Repeat Password
                   </label>
-                  <input type="password"
+                  <input type="password" id="repeatPassword"
                     className={`control control_input${errors.repeatPassword? " error" : ""}`}
-                    id="repeatPassword"
                     placeholder="Password"
                     {...register("repeatPassword", { required: true })}
                   />
-                  { fieldErrorTip(errors.repeatPassword) }
+                  { kit.fieldErrorTip(errors.repeatPassword) }
                 </li>
                 <li className="form__field h-rule">
                   <label className="label with-check" htmlFor="agreement">
-                    <input type="checkbox"
+                    <input type="checkbox" id="agreement"
                       className="control_checkbox"
-                      id="agreement"
                       {...register("agreement", { required: true })}
                     />
                     I agree to the processing of my personal information
                   </label>
-                  { fieldErrorTip(errors.agreement) }
+                  { kit.fieldErrorTip(errors.agreement) }
                 </li>
                 <li className="form__field">
-                  <button type="submit" className="btn_submit">
-                    Create
-                  </button>
+                  <button type="submit" className="btn_submit">Create</button>
                   <span className="note_foot">
                     Already have an account? <Link to="/sign-in">Sign In</Link>.
                   </span>
@@ -164,10 +158,3 @@ const SignUp: React.FC = () => {
 };
 
 export default connect(mapUserStateToProps, {})(SignUp);
-
-
-// {"errors":
-//   {"email":["has already been taken"],
-//    "password":["is too short (minimum is 8 characters)"],
-//    "username":["can't be blank","is too short (minimum is 1 character)"]
-// }}

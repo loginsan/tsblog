@@ -1,5 +1,5 @@
 # Getting Started with React-Redux-Router-Typescript
 
-USERFORMS-branch concerns realisation of Sign-In, Sign-Up, Edit Profile form components. Includes validation with react-hook-forms and yup.
+WRITER-branch concerns realisation of Create & Edit Article form components. Includes validation with react-hook-forms and yup. Also here the ability to delete article.
 
-## Use your power, User!
+## You can write. Write here, write now!

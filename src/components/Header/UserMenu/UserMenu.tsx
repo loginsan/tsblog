@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useCookies } from 'react-cookie';
-import { UserMenuProps } from './types';
+import { UserMenuProps } from '../../../types';
 // import { asyncCurrentUser } from '../../../store/userActions';
 import { UserState } from '../../../store/userReducer';
 import { avatarFallback } from '../../../common';

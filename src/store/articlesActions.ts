@@ -211,22 +211,22 @@ export function asyncGetArticles(page: number = 1, token: string) {
 async function fetchArticle(
   service: Api, 
   dispatch: Dispatch<ArticleAction>, 
-  id: string,
+  slug: string,
   token: string
 ) {
 
   dispatch( viewArticleLoading(true) );
   try {
-    const data: ArticleData = await service.getArticle(id, token);
+    const data: ArticleData = await service.getArticle(slug, token);
     dispatch( viewArticle(data) );
   } catch (err) {
     dispatch( viewArticleError(err.message) );
   }
 }
 
-export function asyncGetArticle(id: string, token: string) {
+export function asyncGetArticle(slug: string, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
-    fetchArticle(api, dispatch, id, token);
+    fetchArticle(api, dispatch, slug, token);
   };
 }
 

@@ -23,7 +23,7 @@ function renderComments(data: Comment[]): React.ReactNode {
       &nbsp;by <time className="pub-time">{ formatDate(updatedAt) }</time>
     </li>)
   });
-  return <ul>{ items }</ul>;
+  return <ul className="bullets">{ items }</ul>;
 }
 
 const CommentsList: React.FC<CommentsProps> = ({ data, token = '' }) => {

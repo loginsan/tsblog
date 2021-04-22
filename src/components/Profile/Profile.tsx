@@ -10,7 +10,7 @@ import { useCookies } from 'react-cookie';
 import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncUpdateProfile } from '../../store/userActions';
 import * as kit from '../../common';
-import { UserMenuProps } from '../Header/UserMenu/types';
+import { UserMenuProps } from '../../types';
 
 
 interface FieldSet {

@@ -1,7 +1,6 @@
 import { Dispatch } from 'react';
 import api from '../services/APIService';
 import { ProfileData, ArticlesData } from '../types';
-import { ArticlesAction } from './articlesActions';
 import {
   FETCH_PROFILE_LOADING,
   FETCH_PROFILE_ERROR,

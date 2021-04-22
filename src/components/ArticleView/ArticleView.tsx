@@ -23,7 +23,7 @@ function renderArticleFull(
   username: string
 ): React.ReactNode {
 
-  const { title, description, tagList, body, 
+  const { slug, title, description, tagList, body, 
     updatedAt, favorited, favoritesCount, author } = props;
   kit.setPageTitle(title);
   const likeClass = `like${favorited? "" : " like_unset"}`;
@@ -32,7 +32,7 @@ function renderArticleFull(
   const elemControls = username === author!.username && (
     <div className="edit-links">
       <Link to="/" className="link link_delete-article">Delete</Link>
-      <Link to="/articles/start/edit" className="link link_edit-article">Edit</Link>
+      <Link to={`/articles/${slug}/edit`} className="link link_edit-article">Edit</Link>
       <div className="delete-confirm hide">
         <span>Are you sure to delete this article?</span>
         <button type="button" className="btn">No</button>
@@ -62,7 +62,9 @@ function renderArticleFull(
         <Link to={`/profiles/${ encodeURI(author && author.username || '') }`} className="author" title="Author">
           <span>
             { author && author.username }
-            <time className="pub-date">{ kit.formatDate(updatedAt) }</time>
+            <time className="pub-date" title={updatedAt}>
+              { kit.formatDate(updatedAt) }
+            </time>
           </span>
           <img src={ author && author.image } title={ author && author.bio } 
             alt="Avatar" className="avatar"
@@ -75,19 +77,18 @@ function renderArticleFull(
       </aside>
     </header>
 
-    <main className="article__markdown">
-      
+    <main className="article__markdown">  
       <ReactMarkdown plugins={[gfm]}>{ body || '' }</ReactMarkdown>
-      <hr />
-      { elemComments }
     </main>
+    <hr />
+    { elemComments }
   </article>
   )
 };
 
 
 interface ArticleViewProps {
-  id: string,
+  slug: string,
   loading: boolean, 
   error: string,
   article: Article,
@@ -96,7 +97,7 @@ interface ArticleViewProps {
 }
 
 const ArticleView: React.FC<ArticleViewProps> = (props) => {
-  const { id, loading, error, article, comments, user } = props;
+  const { slug, loading, error, article, comments, user } = props;
   const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
@@ -104,14 +105,14 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
   function toggleFavorite(evt: React.MouseEvent<HTMLAnchorElement>) {
     if (userToken) {
       evt.preventDefault();
-      dispatch( asyncSetFavorite(id, !!article.favorited, userToken) );
+      dispatch( asyncSetFavorite(slug, !!article.favorited, userToken) );
     }
   }
 
   useEffect(() => {
-    dispatch( asyncGetArticle(id, userToken) );
-    dispatch( asyncGetComments(id, userToken) );
-  }, [dispatch, id, userToken]);
+    dispatch( asyncGetArticle(slug, userToken) );
+    dispatch( asyncGetComments(slug, userToken) );
+  }, [dispatch, slug, userToken]);
 
   const elemArticle = !loading && !error && (
     <>

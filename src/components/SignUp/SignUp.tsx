@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import { mapUserStateToProps } from '../../store/userReducer';
 import { asyncRegister } from '../../store/userActions';
 import * as kit from '../../common';
-import { UserMenuProps } from '../Header/UserMenu/types';
+import { UserMenuProps } from '../../types';
 
 
 interface FieldSet {

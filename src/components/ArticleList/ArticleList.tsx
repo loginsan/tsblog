@@ -48,7 +48,9 @@ function renderArticleShort(
         <Link to={`/profiles/${ encodeURI(author && author.username || '') }`} className="author" title="Author">
           <span>
             { author && author.username }
-            <time className="pub-date">{ kit.formatDate(updatedAt) }</time>
+            <time className="pub-date" title={updatedAt}>
+              { kit.formatDate(updatedAt) }
+            </time>
           </span>
           <img src={ author && author.image } title={ author && author.bio } 
             alt="Avatar" className="avatar"

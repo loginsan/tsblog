@@ -29,7 +29,7 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   useEffect(() => {
     dispatch( asyncGetProfile(username, userToken) );
     dispatch( asyncGetAuthorArticles(username || '', userToken) );
-  }, [dispatch, username]);
+  }, [dispatch, username, userToken]);
 
   const original = [...new Set(list.map(elem => elem.title))];
   const hitsCount = original.length;
@@ -38,14 +38,16 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   const elemArticlesStat = !listLoading && !listError && (
     <div>
       <h3>Articles statistics</h3>
-      <p>{`Total: ${total} | Original: ${hitsCount} | Coeff: ${coeff}`}</p>
+      <p className="stats">
+        {`Total: ${total} | Original: ${hitsCount} | Coeff: ${coeff}`}
+      </p>
     </div>
   )
 
   const elemProfile = !loading && !error && (
     <article className="article article_full">
-      <h2>{label}{ profile.username }</h2>
-      <ul>
+      <h2><b>{ label }</b>{ profile.username }</h2>
+      <ul className="bullets">
         <li className="long-text"><b>Bio: </b>{ profile.bio}</li>
         <li className="long-text"><b>Image: </b>{ profile.image}</li>
         <li><b>Following: </b>{ profile.following? 'yes' : 'no' }</li>

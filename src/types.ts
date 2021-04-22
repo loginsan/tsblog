@@ -60,3 +60,20 @@ export type PostComment = {
 export type CommentsData = {
   comments: Comment[],
 }
+
+export interface UserMenuProps {
+  loading: boolean,
+  error: string,
+  user: User,
+  isLogged: boolean,
+}
+
+export interface ArticleFormProps {
+  loading: boolean,
+  error: string,
+  article: Article,
+  slug: string,
+  formTitle: string,
+  original: Article,
+  user: User,
+}

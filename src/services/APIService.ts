@@ -39,7 +39,10 @@ export async function http<T>(
   // Access-Control-Allow-Origin: https://conduit.productionready.io
   const response = await fetch(url, request);
   if (!response.ok) {
-    const errorsData: string = await response.text();
+    let errorsData: string = await response.text();
+    if (errorsData[0] === '<') {
+      errorsData = `html page returned for status ${response.status}`;
+    }
     throw new Error(`${response.status}|${errorsData}`);
   }
   const body:T = await response.json();
@@ -67,11 +70,10 @@ class APIService {
     tag?: string, 
     author?: string
   ): Promise<ArticlesData> {
+    const offset = this.from + (page - 1) * this.limit;
     const url = this.endURL('/articles', 
-      `limit=${this.limit}` + 
-      `&offset=${this.from + (page - 1) * this.limit}` +
-      `${tag? `&tag=${tag}` : ''}` +
-      `${author? `&author=${author}` : ''}`
+      `limit=${this.limit}&offset=${offset}` +
+      `${tag && `&tag=${tag}`}${author && `&author=${author}`}`
     );
     const data = await http<ArticlesData>(url, token);
     return data as ArticlesData;

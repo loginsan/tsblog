@@ -10,6 +10,7 @@ import {
   FAVORITE_ARTICLE_FETCHING,
   FAVORITE_ARTICLE_ERROR,
   FAVORITE_ARTICLE,
+  DELETE_ARTICLE,
 } from './constants';
 
 
@@ -61,6 +62,13 @@ export default function view(
         loading: false,
         article: (action.payload as ArticleData).article,
       };
+
+    case DELETE_ARTICLE:
+      return {
+        ...state,
+        loading: false,
+        article: {},
+      }
 
     case FETCH_COMMENTS_LOADING:
       return { 

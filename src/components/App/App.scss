@@ -159,6 +159,8 @@ a.link_sign-in:hover, a.link_sign-in:focus {
 .pub-info {
   width: 25%;
   text-align: right;
+}
+.article_short .pub-info {
   overflow: hidden;
 }
 
@@ -270,7 +272,6 @@ a.link_sign-in:hover, a.link_sign-in:focus {
   display: block;
   color: $text-color-secondary;
   font-size: 12px;
-
 }
 
 

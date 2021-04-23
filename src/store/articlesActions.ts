@@ -20,6 +20,7 @@ import {
   FAVORITE_ARTICLE_FETCHING,
   FAVORITE_ARTICLE_ERROR,
   FAVORITE_ARTICLE,
+  DELETE_ARTICLE,
 } from './constants';
 
 type Api = typeof api;
@@ -181,6 +182,10 @@ export const favoriteUpdate = (data: ArticleData): ArticleAction => ({
   payload: data,
 });
 
+export const deleteArticle = (data: ArticleData): ArticleAction => ({
+  type: DELETE_ARTICLE,
+  payload: data,
+});
 
 
 // ASYNC ACTIONS
@@ -191,7 +196,6 @@ async function fetchArticles(
   page: number = 1,
   token: string
 ) {
-
   dispatch( articlesListLoading(true) );
   try {
     const data: ArticlesData = await service.getArticles(page, token);
@@ -214,7 +218,6 @@ async function fetchArticle(
   slug: string,
   token: string
 ) {
-
   dispatch( viewArticleLoading(true) );
   try {
     const data: ArticleData = await service.getArticle(slug, token);
@@ -237,7 +240,6 @@ async function fetchComments(
   slug: string,
   token: string
 ) {
-
   dispatch( commentsLoading(true) );
   try {
     const data: CommentsData = await service.getComments(slug, token);
@@ -261,7 +263,6 @@ async function fetchFavorite(
   flag: boolean,
   token: string
 ) {
-
   dispatch( favoriteFetching(true) );
   try {
     const data: ArticleData = await service.setFavorite(slug, flag, token);
@@ -278,3 +279,23 @@ export function asyncSetFavorite(slug: string, flag: boolean, token: string) {
 }
 
 
+async function fetchDeleteArticle(
+  service: Api, 
+  dispatch: Dispatch<ArticleAction>,
+  slug: string,
+  token: string
+) {
+  dispatch( viewArticleLoading(true) );
+  try {
+    const data: ArticleData = await service.deleteArticle(slug, token);
+    dispatch( deleteArticle(data) );
+  } catch (err) {
+    dispatch( viewArticleError(err.message) );
+  }
+}
+
+export function asyncDeleteArticle(slug: string, token: string) {
+  return (dispatch: Dispatch<ArticleAction>) => {
+    fetchDeleteArticle(api, dispatch, slug, token);
+  };
+}

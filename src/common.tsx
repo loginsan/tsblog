@@ -110,3 +110,16 @@ export function setPageTitle(str: string | undefined): void {
   const cut = (str || '').trim().substr(0, 119);
   document.title = `TS Blog. ${cut}`;
 }
+
+export function setElemVisibility(
+  elem: HTMLDivElement | null,
+  flag: boolean
+): void {
+  if (elem) {
+    if (flag) {
+      elem.classList.remove('hide');
+    } else {
+      elem.classList.add('hide');
+    }
+  }
+}

@@ -33,7 +33,7 @@ function renderArticleShort(
       <div className="article__info">
         <h2>
           <Link className="article__title" to={`/articles/${slug}`}>{title}</Link>
-          <Link to="/sign-up" 
+          <Link to="/sign-in" 
             className={likeClass} 
             title={favorited? 'Remove from Favorite' : 'Add to Favorite'}
             onClick={(evt) => favorite(evt, slug, favorited, token)}

@@ -4,6 +4,7 @@ import {
   ArticlesData, 
   ArticleData,
   CommentsData,
+  Tag,
 } from '../types';
 import {
   LOAD_ARTICLES,
@@ -107,7 +108,7 @@ export type ArticlesAction = {
 // export type ArticleAction = ArticleLoading|ArticleError|ArticleView;
 export type ArticleAction = {
   type: string,
-  payload: boolean | string | ArticleData | CommentsData;
+  payload: boolean | string | ArticleData | CommentsData | number | string[] | Tag;
 };
 
 

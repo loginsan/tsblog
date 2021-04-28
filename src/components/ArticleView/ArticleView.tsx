@@ -23,7 +23,7 @@ interface ArticleViewProps {
 
 const ArticleView: React.FC<ArticleViewProps> = (props) => {
   const { slug, loading, error, article, comments, user } = props;
-  console.log(user);
+  // console.log(user);
   const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
@@ -46,10 +46,12 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
   };
   function yesDeleteClick(evt: React.MouseEvent<HTMLButtonElement>) {
     kit.setElemVisibility(deletePromptRef.current, false);
+    setDeleted(true);
     console.log('async delete fetching');
   };
 // user.username === author!.username
-  const elemControls = user !== undefined && author !== undefined && user.username === author!.username && (
+  const elemControls = user !== undefined && author !== undefined && 
+    user.username === author!.username && (
     <div className="edit-links">
       <Link to="/" 
         className="link link_delete-article"
@@ -86,7 +88,7 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
     dispatch( asyncGetComments(slug, userToken) );
   }, [dispatch, slug, userToken]);
 
-  const elemArticle = !loading && !error && (
+  const elemArticle = !loading && !error && !deleted && (
     <article className="article article_full">
       {/* {<picture>{ randomArticleImage() }</picture>} */}
       <header className="article__head">
@@ -135,6 +137,13 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
     <section className="page">
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
+      { !loading && !error && deleted && (
+        <article className="article article_full">
+          { kit.notifyBox("Article have been deleted", 
+            "Have a nice time in Realworld Blog!") }
+        </article>
+        )
+      }
       { elemArticle }
     </section>
   );

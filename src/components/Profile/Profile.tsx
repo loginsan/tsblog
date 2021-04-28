@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -95,80 +95,28 @@ const Profile: React.FC<UserMenuProps> = (props) => {
     <section className="form">
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
-      { !isLogged && !cookies.token && (<>
-          <h2>Access denied</h2>
-          <p className="long-text">You must sign-in first</p>
-          <Redirect to="/" />
-        </>)
+      { !isLogged && !cookies.token && 
+        kit.notifyBox("Access denied", "You must sign-in first", "/")
       }
-      { isLogged && submitted && (<>
-          <h2>Profile updated successfully</h2>
-          <p className="long-text">Have a nice time in Realworld Blog!</p>
-        </>)
+      { isLogged && submitted && 
+        kit.notifyBox("Profile updated successfully", "Have a nice time in Realworld Blog!")
       }
       { isLogged && !submitted && (<>
         <h2 className="form__title">Edit Profile</h2>
         <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
           <ul className="form__field-list nolist">
-            <li className="form__field">
-              <label className="label" htmlFor="username">
-                Username
-              </label>
-              <input type="text" id="username"
-                className={`control control_input${errors.username? " error" : ""}`}
-                placeholder="Username"
-                {...register("username")}
-              />
-              { kit.fieldErrorTip(errors.username) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="email">
-                Email address
-              </label>
-              <input type="email" id="email"
-                className={`control control_input${errors.email? " error" : ""}`}
-                placeholder="Email address"
-                {...register("email")}
-              />
-              { kit.fieldErrorTip(errors.email) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="password">
-                New password
-              </label>
-              <input type="password" id="password"
-                className={`control control_input${errors.password? " error" : ""}`}
-                placeholder="New password"
-                {...register("password")}
-              />
-              { kit.fieldErrorTip(errors.password) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="bio">
-                Bio
-              </label>
-              <textarea id="bio"
-                className={`control control_textarea${errors.bio? " error" : ""}`}
-                cols={30} rows={5}
-                placeholder="Bio"
-                {...register("bio")}
-              />        
-              { kit.fieldErrorTip(errors.bio) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="image">
-                Avatar image (url)
-              </label>
-              <input type="text" id="image"
-                className={`control control_input${errors.image? " error" : ""}`}
-                placeholder="Avatar image"
-                {...register("image")}
-              />
-              { kit.fieldErrorTip(errors.image) }
-            </li>
+            
+            { kit.formInputField("username", "Username", errors.username, register("username")) }
+            { kit.formInputField("email", "Email address", errors.email, register("email")) }
+            { kit.formInputField("password", "New password", errors.password, register("password")) }
+            { kit.formTextAreaField("bio", "Bio", errors.bio, register("bio")) }
+            { kit.formInputField("image", "Avatar image (url)", errors.image, register("image")) }
             
             <li className="form__field">
               <button type="submit" className="btn_submit">Save</button>
+              <span className="note_foot">
+                * Editing profile <Link to={`/profiles/${user.username}`}>{ user.username }</Link> …
+              </span>
             </li>
           </ul>
           </form>

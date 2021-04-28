@@ -1,18 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, Dispatch } from 'react';
 import { useDispatch, connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormRegister } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
 
 import * as kit from '../../common';
-import { ArticleFormProps } from '../../types';
+import { ArticleFormProps, Tag } from '../../types';
 import { EditState } from '../../store/editReducer';
 import { UserState } from '../../store/userReducer';
 import { ArticleState } from '../../store/singleReducer';
-import { asyncCreateArticle, asyncUpdateArticle } from '../../store/editActions';
+import { asyncCreateArticle, asyncUpdateArticle,
+  initTags, editTag, addTag, removeTag } from '../../store/editActions';
+import { asyncGetArticle, ArticleAction } from '../../store/articlesActions';
 
 // const mock: ArticleData = {
 //     "article": {
@@ -27,17 +29,72 @@ interface FieldSet {
   title: string,
   description: string,
   body: string,
-  tagList: string,
+  tagList: string[],
 }
 
 type Keys = keyof FieldSet;
+
 
 const schema = yup.object().shape({
   title: yup.string().required(),
   description: yup.string().required(),
   body: yup.string().required(),
-  tagList: yup.string(),
+  tagList: yup.mixed(),
 });
+
+function buildTagLines(
+  tags: Tag[],
+  dispatchFn: Dispatch<ArticleAction>,
+  reg: UseFormRegister<FieldSet>
+): React.ReactNode {
+
+  // console.log(reg);
+
+  function addTagField(key: number) {
+    dispatchFn( addTag(key) )
+  }
+
+  function removeTagField(key: number) {
+    dispatchFn( removeTag(key) )
+  }
+
+  function handleChange(evt: React.ChangeEvent<HTMLInputElement>, key: number) {
+    const val = evt?.currentTarget.value;
+    const tag: Tag = { order: key, text: val };
+    dispatchFn( editTag(tag) )
+  }
+
+  return tags.map(elem => {
+    const tagId = `tag-index_${elem.order}`;
+    const key = elem.text !== ''? elem.order : Date.now();
+    
+    return (
+      <li className="tag-line" key={key}>
+        <input type="text" id={tagId}
+          className="control control_input control_tag"
+          placeholder="Tag"
+          autoComplete="off"
+          { ...reg("tagList") }
+          onChange={(evt) => handleChange(evt, key)}
+        />
+        <button type="button" 
+          className="btn_delete btn_tag"
+          onClick={() => removeTagField(key)}
+        >
+          Delete
+        </button>
+        <button type="button"
+          className="btn_add btn_tag"
+          onClick={() => addTagField(key)}
+        >
+          Add Tag
+        </button>
+      </li>
+    )
+  })
+}
+
+const zeroTag: Tag = { order: 0, text: '' };
 
 
 const ArticleForm: React.FC<ArticleFormProps> = (props) => {
@@ -47,12 +104,14 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
     article,
     slug,
     formTitle,
+    tagList,
     original,
     user,
   } = props;
   const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
+  // const tagsRef = useRef<HTMLUListElement>(null);
 
   kit.setPageTitle(formTitle);
 
@@ -64,28 +123,23 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
     setError,
   } = useForm<FieldSet>({ resolver: yupResolver(schema) });
 
+  // const [tagFields, setTagFields] = useState([zeroTag]); // `80's`, `lea thompson`, `film`, `wonderful`, `kind of`, `some`
   const [submitted, setSubmitted] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setValue('title', (slug && original.title) || '');
-    setValue('description', (slug && original.description) || '');
-    setValue('body', (slug && original.body) || '');
-    setValue('tagList', ((slug && original.tagList) || []).join(', '));
-  }, [setValue, original, slug]);
-
-  function onSubmit(data: FieldSet) {
-    const articleSend = {
-      ...data,
-      tagList: data.tagList.split(', ')
-    };
-    if (slug) {
-      dispatch( asyncUpdateArticle(slug, articleSend, userToken) );
-    } else {
-      dispatch( asyncCreateArticle(articleSend, userToken) );
+    if (slug && userToken && !original.author) {
+      dispatch( asyncGetArticle(slug, userToken) );
     }
-    setSubmitted(true);
-  }
+  }, [slug, userToken, original, dispatch]);
+
+  useEffect(() => {
+    setValue('title', original.title || '');
+    setValue('description', original.description || '');
+    setValue('body', original.body || '');
+    setValue('tagList', original.tagList || ['']);
+    dispatch( initTags(original.tagList || ['']) );
+  }, [setValue, original, initTags]);
 
   useEffect(() => {
     if (error) {
@@ -100,131 +154,73 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
 
   useEffect(() => {
     if (user.username) {
-      // console.log(slug, user.username, original.author?.username);
-      setVisible(!slug || user.username === original.author?.username);
+      setVisible(!slug || !!original.title || 
+        user.username === original.author?.username);
     }
   }, [slug, user, original]);
+
+  function onSubmit(data: FieldSet) {
+    const articleSend = {
+      ...data,
+      tagList: data.tagList
+    };
+    console.log(articleSend);
+    /* if (slug) {
+      dispatch( asyncUpdateArticle(slug, articleSend, userToken) );
+    } else {
+      dispatch( asyncCreateArticle(articleSend, userToken) );
+    } */
+    setSubmitted(true);
+  }
+
+  useEffect(() => { console.log(tagList) }, [tagList]);
+
 
   return (
     <section className="form form_article">
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
 
-      { !userToken && (<>
-          <h2>Access denied</h2>
-          <p className="long-text">You must sign-in first</p>
-          <Redirect to="/" />
-        </>)
+      { !userToken && 
+        kit.notifyBox("Access denied", "You must sign-in first", "/")
       }
 
-      { !visible && slug && (<>
-          <h2>Access denied</h2>
-          <p className="long-text">You can edit only your articles</p>
-        </>)
+      { !visible && slug && !!original.title &&
+        kit.notifyBox("Access denied", "You can edit only your articles")
       }
 
-      { !visible && !slug && (<>
-          <h2>Form loading</h2>
-          <p className="long-text">Just wait a second…</p>
-        </>)
+      { !visible && slug && !original.title &&
+        kit.notifyBox("Form loading", "Just wait a second…")
       }
 
-      { submitted && (<>
-          <h2>Form submitted successfully</h2>
-          <p className="long-text">
-            You can now&nbsp;
+      { !visible && !slug &&
+        kit.notifyBox("Form loading", "Just wait a second…")
+      }
+
+      { submitted &&
+        kit.notifyBox("Form submitted successfully",
+          (<>You can now&nbsp;
             <Link to={`/articles/${article.slug}`}>view the article</Link>
-          </p>
-        </>)
+          </>)
+        )
       }
 
       { visible && !submitted && (<>
         <h2 className="form__title">{ formTitle }</h2>
         <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
           <ul className="form__field-list nolist">
+            { kit.formInputField("title", "Title", errors.title, register("title")) }
+            { kit.formInputField("description", "Short description", errors.description, register("description")) }
+            { kit.formTextAreaField("body", "Text", errors.body, register("body")) }
+            {/* kit.formInputField("tagList", "Tags", errors.tagList, register("tagList")) */}
+            
+            
             <li className="form__field">
-              <label className="label" htmlFor="title">
-                Title
-              </label>
-              <input type="text" id="title"
-                className={`control control_input${errors.title? " error" : ""}`}
-                placeholder="Title"
-                {...register("title")}
-              />
-              { kit.fieldErrorTip(errors.title) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="description">
-                Short description
-              </label>
-              <input type="text" id="description"
-                className={`control control_input${errors.description? " error" : ""}`}
-                placeholder="Short description"
-                {...register("description")}
-              />
-              { kit.fieldErrorTip(errors.description) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="body">
-                Text
-              </label>
-              <textarea id="body"
-                className={`control control_textarea${errors.body? " error" : ""}`}
-                cols={30} rows={5}
-                placeholder="Text with Markdown"
-                {...register("body")}
-              />        
-              { kit.fieldErrorTip(errors.body) }
-            </li>
-            <li className="form__field">
-              <label className="label" htmlFor="tagList">
-                Tags
-              </label>
-              <input type="text" id="tagList"
-                className="control control_input"
-                {...register("tagList")}
-              />
-              { kit.fieldErrorTip(errors.tagList) }
-            </li>
-
-            <li className="form__field">
-              <label className="label" htmlFor="tag_main">
-                Tags
-              </label>
+              <label className="label" htmlFor="tag-index_0">Tags</label>
               <ul className="tags-list nolist">
-                <li className="tag-line">
-                  <input
-                    className="control control_input control_tag"
-                    type="text"
-                    id="tag_main"
-                    name="tag_main"
-                    placeholder="Tag"
-                  />
-                  <button type="button" className="btn_delete btn_tag">
-                    Delete
-                  </button>
-                  <button type="button" className="btn_add btn_tag">
-                    Add Tag
-                  </button>
-                </li>
-                <li className="tag-line">
-                  <input
-                    className="control control_input control_tag"
-                    type="text"
-                    id="tag_next"
-                    name="tag_next"
-                    placeholder="Tag"
-                  />
-                  <button type="button" className="btn_delete btn_tag">
-                    Delete
-                  </button>
-                  <button type="button" className="btn_add btn_tag">
-                    Add Tag
-                  </button>
-                </li>
+              { buildTagLines(tagList, dispatch, register)
+              }
               </ul>
-              
-              <span className="note_field error">Passwords must match</span>
             </li>
             
             <li className="form__field">
@@ -232,7 +228,7 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
                 { slug? 'Save' : 'Send' }
               </button>
               { slug && (<span className="note_foot">
-                  * Editing article <u>{ slug }</u> …
+                  * Editing article <Link to={`/articles/${slug}`}>{ slug }</Link> …
                 </span>) }
             </li>
           </ul>
@@ -252,6 +248,7 @@ const mapStateToProps = (state: {
   loading: state.edit.loading, 
   error: state.edit.error,
   article: state.edit.article,
+  tagList: state.edit.tagList,
   original: state.view.article,
   user: state.user.user,
 });

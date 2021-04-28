@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { asyncGetProfile, asyncGetAuthorArticles } from '../../store/profileActions';
 import { ProfileState } from '../../store/profileReducer';
@@ -31,9 +32,26 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
     dispatch( asyncGetAuthorArticles(username || '', userToken) );
   }, [dispatch, username, userToken]);
 
-  const original = [...new Set(list.map(elem => elem.title))];
+  const links: React.ReactNode[] = [];
+  const original: string[] = []; // ...new Set( list.map(elem => elem.title ))
+  for (let i = 0; i < list.length; i++) {
+    const { slug, title } = list[i];
+    if ( !original.includes(title || '') ) {
+      original.push(title || '');
+      links.push( (<li key={slug}>
+        <Link to={`/articles/${slug}`}>{title}</Link>
+      </li>) );
+    }
+  }
   const hitsCount = original.length;
   const coeff = total === 0? 0 : Math.round(hitsCount / total * 1e3) / 1e3;
+  // for (let i = 0; i < hitsCount; i++) {
+  //   const searchTitle = original[i];
+  //   const index = list.findIndex(elem => elem.title === searchTitle);
+  //   if (index !== -1) {
+  //     slugs.push( list[index].slug || '' )
+  //   }
+  // }
 
   const elemArticlesStat = !listLoading && !listError && (
     <div>
@@ -42,7 +60,16 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
         {`Total: ${total} | Original: ${hitsCount} | Coeff: ${coeff}`}
       </p>
     </div>
-  )
+  );
+
+  const elemChosenArticles = !listLoading && !listError && hitsCount && (
+    <div>
+      <h3>Chosen Articles</h3>
+      <ul className="bullets no-bottom-margin">
+        { links }
+      </ul>
+    </div>
+  );
 
   const elemProfile = !loading && !error && (
     <article className="article article_full">
@@ -56,6 +83,8 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
       { elemLoading(listLoading) }
       { elemAlert(listError) }
       { elemArticlesStat }
+      <hr />
+      { elemChosenArticles }
     </article>
   );
 

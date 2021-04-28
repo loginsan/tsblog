@@ -35,6 +35,11 @@ export type Comment = {
   author?: Profile,
 }
 
+export type Tag = {
+  order: number,
+  text: string,
+}
+
 
 export type ArticleData = {
   article: Article,
@@ -74,6 +79,7 @@ export interface ArticleFormProps {
   article: Article,
   slug: string,
   formTitle: string,
+  tagList: Tag[],
   original: Article,
   user: User,
 }

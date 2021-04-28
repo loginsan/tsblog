@@ -1,11 +1,15 @@
 import { Dispatch } from 'react';
 import api from '../services/APIService';
-import { Article, ArticleData } from '../types';
+import { Article, ArticleData, Tag } from '../types';
 import { ArticleAction } from './articlesActions';
 import {
   EDIT_ARTICLE_FETCHING,
   EDIT_ARTICLE_ERROR,
   EDIT_ARTICLE_SUCCESS,
+  INIT_TAGS,
+  ADD_TAG,
+  EDIT_TAG,
+  REMOVE_TAG,
 } from './constants';
 
 type Api = typeof api;
@@ -23,6 +27,26 @@ export const editArticleError = (msg: string): ArticleAction => ({
 export const editArticleSuccess = (data: ArticleData): ArticleAction => ({
   type: EDIT_ARTICLE_SUCCESS,
   payload: data,
+});
+
+export const initTags = (tags: string[]): ArticleAction => ({
+  type: INIT_TAGS,
+  payload: tags,
+});
+
+export const editTag = (tag: Tag): ArticleAction => ({
+  type: EDIT_TAG,
+  payload: tag,
+});
+
+export const addTag = (num: number): ArticleAction => ({
+  type: ADD_TAG,
+  payload: num,
+});
+
+export const removeTag = (num: number): ArticleAction => ({
+  type: REMOVE_TAG,
+  payload: num,
 });
 
 

@@ -76,6 +76,9 @@ const SignIn: React.FC<UserMenuProps> = (props) => {
         ? (<>
           <h2>{`Welcome, ${user.username}!`}</h2>
           <p className="long-text">{`Your token is ${user.token}`}</p>
+          <p className="no-bottom-margin">
+            View <Link to={`/profiles/${user.username}`}>personal profile page…</Link>
+          </p>
         </>)
         : (<>
           <h2 className="form__title">Sign In</h2>

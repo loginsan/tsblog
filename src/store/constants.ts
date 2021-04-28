@@ -39,3 +39,8 @@ export const EDIT_ARTICLE_ERROR = "EDIT_ARTICLE_ERROR";
 export const EDIT_ARTICLE_SUCCESS = "EDIT_ARTICLE_SUCCESS";
 
 export const DELETE_ARTICLE = "DELETE_ARTICLE";
+
+export const INIT_TAGS = "INIT_TAGS";
+export const ADD_TAG = "ADD_TAG";
+export const EDIT_TAG = "EDIT_TAG";
+export const REMOVE_TAG = "REMOVE_TAG";

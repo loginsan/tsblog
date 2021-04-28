@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { FieldError } from 'react-hook-form';
+import { Link, Redirect } from 'react-router-dom';
+import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 import { Alert } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import avatarDefault from './assets/user-avatar.png';
@@ -122,4 +122,56 @@ export function setElemVisibility(
       elem.classList.add('hide');
     }
   }
+}
+
+export function formInputField(
+  id: string,
+  title: string,
+  error: FieldError | undefined,
+  reg: UseFormRegisterReturn
+): React.ReactNode {
+  return (
+    <li className="form__field">
+      <label className="label" htmlFor={id}>{ title }</label>
+      <input type="text" id={id}
+        className={`control control_input${error? " error" : ""}`}
+        placeholder={title}
+        {...reg}
+      />
+      { fieldErrorTip(error) }
+    </li>
+  );
+}
+
+export function formTextAreaField(
+  id: string,
+  title: string,
+  error: FieldError | undefined,
+  reg: UseFormRegisterReturn
+): React.ReactNode {
+  return (
+    <li className="form__field">
+      <label className="label" htmlFor={id}>{ title }</label>
+      <textarea id={id}
+        className={`control control_textarea${error? " error" : ""}`}
+        cols={30} rows={5}
+        placeholder={title}
+        {...reg}
+      />
+      { fieldErrorTip(error) }
+    </li>
+  );
+}
+
+export function notifyBox(
+  title: string,
+  body: React.ReactNode,
+  url: string = ''
+): React.ReactNode {
+  return (<>
+    <h2>{title}</h2>
+    <p className="long-text">{body}</p>
+    { url && <Redirect to={url} /> }
+  </>
+  )
 }

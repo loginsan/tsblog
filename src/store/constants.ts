@@ -44,3 +44,4 @@ export const INIT_TAGS = "INIT_TAGS";
 export const ADD_TAG = "ADD_TAG";
 export const EDIT_TAG = "EDIT_TAG";
 export const REMOVE_TAG = "REMOVE_TAG";
+export const CLEAR_EDIT = "CLEAR_EDIT";

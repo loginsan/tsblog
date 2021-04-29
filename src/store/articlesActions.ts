@@ -108,7 +108,8 @@ export type ArticlesAction = {
 // export type ArticleAction = ArticleLoading|ArticleError|ArticleView;
 export type ArticleAction = {
   type: string,
-  payload: boolean | string | ArticleData | CommentsData | number | string[] | Tag;
+  payload: boolean | string | number | string[] | 
+    ArticleData | CommentsData | Tag;
 };
 
 

@@ -10,6 +10,7 @@ import {
   ADD_TAG,
   EDIT_TAG,
   REMOVE_TAG,
+  CLEAR_EDIT,
 } from './constants';
 
 type Api = typeof api;
@@ -47,6 +48,11 @@ export const addTag = (num: number): ArticleAction => ({
 export const removeTag = (num: number): ArticleAction => ({
   type: REMOVE_TAG,
   payload: num,
+});
+
+export const clearEdit = (flag: boolean): ArticleAction => ({
+  type: CLEAR_EDIT,
+  payload: flag,
 });
 
 

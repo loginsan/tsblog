@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef, Dispatch } from 'react';
+import React, { useState, useEffect, Dispatch } from 'react';
 import { useDispatch, connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { useForm, UseFormRegister } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
 import { useCookies } from 'react-cookie';
 
 import * as kit from '../../common';
@@ -13,7 +11,7 @@ import { EditState } from '../../store/editReducer';
 import { UserState } from '../../store/userReducer';
 import { ArticleState } from '../../store/singleReducer';
 import { asyncCreateArticle, asyncUpdateArticle,
-  initTags, editTag, addTag, removeTag } from '../../store/editActions';
+  initTags, editTag, addTag, removeTag, clearEdit } from '../../store/editActions';
 import { asyncGetArticle, ArticleAction } from '../../store/articlesActions';
 
 // const mock: ArticleData = {
@@ -29,26 +27,14 @@ interface FieldSet {
   title: string,
   description: string,
   body: string,
-  tagList: string[],
 }
 
 type Keys = keyof FieldSet;
 
-
-const schema = yup.object().shape({
-  title: yup.string().required(),
-  description: yup.string().required(),
-  body: yup.string().required(),
-  tagList: yup.mixed(),
-});
-
 function buildTagLines(
   tags: Tag[],
-  dispatchFn: Dispatch<ArticleAction>,
-  reg: UseFormRegister<FieldSet>
+  dispatchFn: Dispatch<ArticleAction>
 ): React.ReactNode {
-
-  // console.log(reg);
 
   function addTagField(key: number) {
     dispatchFn( addTag(key) )
@@ -61,12 +47,13 @@ function buildTagLines(
   function handleChange(evt: React.ChangeEvent<HTMLInputElement>, key: number) {
     const val = evt?.currentTarget.value;
     const tag: Tag = { order: key, text: val };
+    // console.log(val);
     dispatchFn( editTag(tag) )
   }
 
   return tags.map(elem => {
     const tagId = `tag-index_${elem.order}`;
-    const key = elem.text !== ''? elem.order : Date.now();
+    const key = elem.order;
     
     return (
       <li className="tag-line" key={key}>
@@ -74,7 +61,8 @@ function buildTagLines(
           className="control control_input control_tag"
           placeholder="Tag"
           autoComplete="off"
-          { ...reg("tagList") }
+          defaultValue={elem.text}
+          name={`tag.${key}`}
           onChange={(evt) => handleChange(evt, key)}
         />
         <button type="button" 
@@ -94,8 +82,6 @@ function buildTagLines(
   })
 }
 
-const zeroTag: Tag = { order: 0, text: '' };
-
 
 const ArticleForm: React.FC<ArticleFormProps> = (props) => {
   const { 
@@ -111,7 +97,6 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
   const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
-  // const tagsRef = useRef<HTMLUListElement>(null);
 
   kit.setPageTitle(formTitle);
 
@@ -121,9 +106,8 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
     formState: { errors }, 
     setValue,
     setError,
-  } = useForm<FieldSet>({ resolver: yupResolver(schema) });
+  } = useForm<FieldSet>();
 
-  // const [tagFields, setTagFields] = useState([zeroTag]); // `80's`, `lea thompson`, `film`, `wonderful`, `kind of`, `some`
   const [submitted, setSubmitted] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -134,12 +118,15 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
   }, [slug, userToken, original, dispatch]);
 
   useEffect(() => {
-    setValue('title', original.title || '');
-    setValue('description', original.description || '');
-    setValue('body', original.body || '');
-    setValue('tagList', original.tagList || ['']);
-    dispatch( initTags(original.tagList || ['']) );
-  }, [setValue, original, initTags]);
+    setValue('title', slug && original.title || '');
+    setValue('description', slug && original.description || '');
+    setValue('body', slug && original.body || '');
+    if (slug) {
+      dispatch( initTags(original.tagList?.length && original.tagList || ['']) );
+    } else {
+      dispatch( initTags(['']) );
+    }
+  }, [slug, setValue, original, dispatch]);
 
   useEffect(() => {
     if (error) {
@@ -162,18 +149,20 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
   function onSubmit(data: FieldSet) {
     const articleSend = {
       ...data,
-      tagList: data.tagList
+      tagList: tagList.map(({ order, text }) => text)
     };
-    console.log(articleSend);
-    /* if (slug) {
+    // console.log(data);
+    // console.log(tagList);
+    if (slug) {
       dispatch( asyncUpdateArticle(slug, articleSend, userToken) );
+      dispatch( clearEdit(true) );
     } else {
       dispatch( asyncCreateArticle(articleSend, userToken) );
-    } */
+    }
     setSubmitted(true);
   }
 
-  useEffect(() => { console.log(tagList) }, [tagList]);
+  // useEffect(() => { console.log(tagList) }, [tagList]);
 
 
   return (
@@ -209,17 +198,44 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
         <h2 className="form__title">{ formTitle }</h2>
         <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
           <ul className="form__field-list nolist">
-            { kit.formInputField("title", "Title", errors.title, register("title")) }
-            { kit.formInputField("description", "Short description", errors.description, register("description")) }
-            { kit.formTextAreaField("body", "Text", errors.body, register("body")) }
+            <li className="form__field">
+              <label className="label" htmlFor="title">Title</label>
+              <input type="text" id="title"
+                className={`control control_input${errors.title && " error"}`}
+                placeholder="Title"
+                { ...register("title", { required: "true" }) }
+              />
+              { kit.fieldErrorTip(errors.title) }
+            </li>
+            {/* kit.formInputField("title", "Title", errors.title, register("title")) */}
+            <li className="form__field">
+              <label className="label" htmlFor="description">Short description</label>
+              <input type="text" id="description"
+                className={`control control_input${errors.description && " error"}`}
+                placeholder="Short description"
+                { ...register("description", { required: "true" }) }
+              />
+              { kit.fieldErrorTip(errors.description) }
+            </li>
+            {/* kit.formInputField("description", "Short description", errors.description, register("description")) */}
+            <li className="form__field">
+              <label className="label" htmlFor="body">Text</label>
+              <textarea id="body"
+                className={`control control_textarea${errors.body? " error" : ""}`}
+                cols={30} rows={5}
+                placeholder="Text"
+                { ...register("body", { required: "true" }) }
+              />
+              { kit.fieldErrorTip(errors.body) }
+            </li>
+            {/* kit.formTextAreaField("body", "Text", errors.body, register("body")) */}
             {/* kit.formInputField("tagList", "Tags", errors.tagList, register("tagList")) */}
             
             
             <li className="form__field">
               <label className="label" htmlFor="tag-index_0">Tags</label>
               <ul className="tags-list nolist">
-              { buildTagLines(tagList, dispatch, register)
-              }
+              { buildTagLines(tagList, dispatch) }
               </ul>
             </li>
             
@@ -252,9 +268,5 @@ const mapStateToProps = (state: {
   original: state.view.article,
   user: state.user.user,
 });
-
-// const mapDispatchToProps = (dispatchFn: Dispatch<ArticleAction>) => ({
-// 
-// });
 
 export default connect(mapStateToProps, {})(ArticleForm);

@@ -46,8 +46,9 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
   };
   function yesDeleteClick(evt: React.MouseEvent<HTMLButtonElement>) {
     kit.setElemVisibility(deletePromptRef.current, false);
+    dispatch( asyncDeleteArticle(slug, userToken) );
     setDeleted(true);
-    console.log('async delete fetching');
+    // console.log('async delete fetching');
   };
 // user.username === author!.username
   const elemControls = user !== undefined && author !== undefined && 
@@ -156,9 +157,5 @@ const mapStateToProps = (state: {view: ArticleState, user: UserState}) => ({
   comments: state.view.comments,
   user: state.user.user,
 });
-
-// const mapDispatchToProps = (dispatchFn: Dispatch<ArticleAction>) => ({
-// 
-// });
 
 export default connect(mapStateToProps, {})(ArticleView);

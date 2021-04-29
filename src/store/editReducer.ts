@@ -8,6 +8,7 @@ import {
   ADD_TAG,
   EDIT_TAG,
   REMOVE_TAG,
+  CLEAR_EDIT,
 } from './constants';
 
 
@@ -33,8 +34,11 @@ export default function edit(
 ): EditState {
   
   switch (action.type) {
+    case CLEAR_EDIT:
+      return initialState;
+    
     case INIT_TAGS: {
-      const data = (action.payload as string[]).filter(elem => elem !== '');
+      const data = (action.payload as string[]); // .filter(elem => elem !== '')
       return {
         ...state,
         tagList: data.map((tag, index) => ({ order: index, text: tag }))

@@ -1,17 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import { UserMenuProps } from '../../../types';
-// import { asyncCurrentUser } from '../../../store/userActions';
+import { clearEdit } from '../../../store/editActions';
 import { UserState } from '../../../store/userReducer';
 import { avatarFallback } from '../../../common';
 
 
 const UserMenu: React.FC<UserMenuProps> = (props) => {
   const { loading, user, isLogged } = props;
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
+  
+
+  function checkClearEdit(evt: React.MouseEvent<HTMLAnchorElement>): void {
+    dispatch( clearEdit(true) );
+  }
 
   // console.log(`usermenu render, ${user.username? user.username : "-"}`);
 
@@ -25,7 +30,11 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
 
   return isLogged? (
     <div className="UserMenu">
-      <Link to="/new-article" className="link link_new-article" title="Create new article">
+      <Link to="/new-article"
+        className="link link_new-article"
+        title="Create new article"
+        onClick={checkClearEdit}
+      >
         Create article
       </Link>
       <Link to="/profile" className="link link_edit-profile" title="Edit profile">

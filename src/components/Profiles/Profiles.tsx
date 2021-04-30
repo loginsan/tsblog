@@ -33,7 +33,7 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   }, [dispatch, username, userToken]);
 
   const links: React.ReactNode[] = [];
-  const original: string[] = []; // ...new Set( list.map(elem => elem.title ))
+  const original: string[] = [];
   for (let i = 0; i < list.length; i++) {
     const { slug, title } = list[i];
     if ( !original.includes(title || '') ) {
@@ -45,13 +45,6 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   }
   const hitsCount = original.length;
   const coeff = total === 0? 0 : Math.round(hitsCount / total * 1e3) / 1e3;
-  // for (let i = 0; i < hitsCount; i++) {
-  //   const searchTitle = original[i];
-  //   const index = list.findIndex(elem => elem.title === searchTitle);
-  //   if (index !== -1) {
-  //     slugs.push( list[index].slug || '' )
-  //   }
-  // }
 
   const elemArticlesStat = !listLoading && !listError && (
     <div>
@@ -109,9 +102,4 @@ const mapStateToProps = (state: {profile: ProfileState}) => ({
   total: state.profile.total,
 });
 
-// const mapDispatchToProps = (dispatchFn: Dispatch<ArticleAction>) => ({
-// 
-// });
-
 export default connect(mapStateToProps, {})(Profiles);
-// export default Profiles;

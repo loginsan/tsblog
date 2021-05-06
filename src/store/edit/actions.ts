@@ -1,7 +1,5 @@
 import { Dispatch } from 'react';
-import api from '../services/APIService';
-import { Article, ArticleData, Tag } from '../types';
-import { ArticleAction } from './articlesActions';
+import api from '../../services/APIService';
 import {
   EDIT_ARTICLE_FETCHING,
   EDIT_ARTICLE_ERROR,
@@ -11,55 +9,58 @@ import {
   EDIT_TAG,
   REMOVE_TAG,
   CLEAR_EDIT,
-} from './constants';
+} from '../constants';
+import { ArticleData, Tag, ArticleCore, PostArticle } from './types';
+import { ArticleAction } from '../single/types';
 
 type Api = typeof api;
+
 
 export const editArticleFetching = (flag: boolean): ArticleAction => ({
   type: EDIT_ARTICLE_FETCHING,
   payload: flag,
-});
+}) as const;
 
 export const editArticleError = (msg: string): ArticleAction => ({
   type: EDIT_ARTICLE_ERROR,
   payload: msg,
-});
+}) as const;
 
-export const editArticleSuccess = (data: ArticleData): ArticleAction => ({
+export const editArticleSuccess = (data: PostArticle): ArticleAction => ({
   type: EDIT_ARTICLE_SUCCESS,
   payload: data,
-});
+}) as const;
 
 export const initTags = (tags: string[]): ArticleAction => ({
   type: INIT_TAGS,
   payload: tags,
-});
+}) as const;
 
 export const editTag = (tag: Tag): ArticleAction => ({
   type: EDIT_TAG,
   payload: tag,
-});
+}) as const;
 
 export const addTag = (num: number): ArticleAction => ({
   type: ADD_TAG,
   payload: num,
-});
+}) as const;
 
 export const removeTag = (num: number): ArticleAction => ({
   type: REMOVE_TAG,
   payload: num,
-});
+}) as const;
 
 export const clearEdit = (flag: boolean): ArticleAction => ({
   type: CLEAR_EDIT,
   payload: flag,
-});
+}) as const;
 
 
 async function fetchNewArticle(
   service: Api, 
   dispatch: Dispatch<ArticleAction>, 
-  article: Article,
+  article: ArticleCore,
   token: string
 ) {
   dispatch( editArticleFetching(true) );
@@ -71,10 +72,10 @@ async function fetchNewArticle(
   }
 }
 
-export function asyncCreateArticle(article: Article, token: string) {
+export function asyncCreateArticle(article: ArticleCore, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchNewArticle(api, dispatch, article, token);
-  };
+  }
 }
 
 
@@ -82,7 +83,7 @@ async function fetchUpdateArticle(
   service: Api, 
   dispatch: Dispatch<ArticleAction>,
   slug: string, 
-  article: Article,
+  article: ArticleCore,
   token: string
 ) {
   dispatch( editArticleFetching(true) );
@@ -96,10 +97,10 @@ async function fetchUpdateArticle(
 
 export function asyncUpdateArticle(
   slug: string,
-  article: Article,
+  article: ArticleCore,
   token: string
 ) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchUpdateArticle(api, dispatch, slug, article, token);
-  };
+  }
 }

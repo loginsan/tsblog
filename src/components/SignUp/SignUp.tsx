@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, connect } from 'react-redux';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import cn from 'classnames';
 
-import { mapUserStateToProps } from '../../store/userReducer';
-import { asyncRegister } from '../../store/userActions';
-import * as kit from '../../common';
 import { UserMenuProps } from '../../types';
+import { mapUserStateToProps } from '../../store/user/reducer';
+import { asyncRegister } from '../../store/user/actions';
+import * as kit from '../../common';
 
 
 interface FieldSet {
@@ -44,6 +45,12 @@ const schema = yup.object().shape({
 const SignUp: React.FC<UserMenuProps> = (props) => {
   const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
+  const [enabledSubmit, setEnabledSubmit] = useState(false);
+  const history = useHistory();
+
+  function toggleEnable() {
+    setEnabledSubmit(!enabledSubmit);
+  }
 
   kit.setPageTitle(`Sign-Up Form`);
 
@@ -65,8 +72,13 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
     }
   }, [error, setError]);
 
+  useEffect(() => {
+    if (isLogged) {
+      setTimeout(() => { history.push(`/`) }, 3000);
+    }
+  }, [isLogged, history]);
+
   function onSubmit(data: FieldSet) {
-    // console.log(data);
     const userData = { 
       username: data.username, 
       email: data.email, 
@@ -76,75 +88,43 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
   }
 
   return (
-    <section className="form">
+    <section className={cn("form")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
       { !loading && !error && isLogged
         ? (<>
             <h2>{`Welcome, ${user.username}!`}</h2>
-            <p className="long-text">Have a nice time in Realworld Blog!</p>
+            <p className={cn("long-text")}>Have a nice time in Realworld Blog! You will be redirected to 
+            <Link to="/">articles page</Link> …</p>
           </>)
         : (<>
-            <h2 className="form__title">Create new account</h2>
-            <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
-              <ul className="form__field-list nolist">
-                <li className="form__field">
-                  <label className="label" htmlFor="username">
-                    Username
-                  </label>
-                  <input type="text" id="username"
-                    className={`control control_input${errors.username? " error" : ""}`}
-                    placeholder="Username"
-                    {...register("username")}
-                  />
-                  { kit.fieldErrorTip(errors.username) }
-                </li>
-                <li className="form__field">
-                  <label className="label" htmlFor="email">
-                    Email address
-                  </label>
-                  <input type="email" id="email"
-                    className={`control control_input${errors.email? " error" : ""}`}
-                    placeholder="Email address"
-                    {...register("email")}
-                  />
-                  { kit.fieldErrorTip(errors.email) }
-                </li>
-                <li className="form__field">
-                  <label className="label" htmlFor="password">
-                    Password
-                  </label>
-                  <input type="password" id="password"
-                    className={`control control_input${errors.password? " error" : ""}`}
-                    placeholder="Password"
-                    {...register("password", { required: true })}
-                  />
-                  { kit.fieldErrorTip(errors.password) }
-                </li>
-                <li className="form__field">
-                  <label className="label" htmlFor="repeatPassword">
-                    Repeat Password
-                  </label>
-                  <input type="password" id="repeatPassword"
-                    className={`control control_input${errors.repeatPassword? " error" : ""}`}
-                    placeholder="Password"
-                    {...register("repeatPassword", { required: true })}
-                  />
-                  { kit.fieldErrorTip(errors.repeatPassword) }
-                </li>
-                <li className="form__field h-rule">
-                  <label className="label with-check" htmlFor="agreement">
+            <h2 className={cn("form__title")}>Create new account</h2>
+            <form className={cn("form__body")} onSubmit={ handleSubmit(onSubmit) }>
+              <ul className={cn("form__field-list", "nolist")}>
+                { kit.formInputField("username", "Username", errors.username, register("username")) }
+                { kit.formInputField("email", "Email address", errors.email, register("email")) }
+                { kit.formInputField("password", "Password", errors.password, register("password")) }
+                { kit.formInputField("repeatPassword", "Repeat Password", errors.repeatPassword, register("repeatPassword")) }
+                <li className={cn("form__field", "h-rule")}>
+                  <label className={cn("label", "with-check")} htmlFor="agreement">
                     <input type="checkbox" id="agreement"
-                      className="control_checkbox"
+                      className={cn("control_checkbox")}
                       {...register("agreement", { required: true })}
+                      onClick={ toggleEnable }
                     />
                     I agree to the processing of my personal information
                   </label>
                   { kit.fieldErrorTip(errors.agreement) }
                 </li>
-                <li className="form__field">
-                  <button type="submit" className="btn_submit">Create</button>
-                  <span className="note_foot">
+                <li className={cn("form__field")}>
+                  <button
+                    type="submit"
+                    className={cn("btn_submit")}
+                    disabled={ !enabledSubmit }
+                  >
+                    Create
+                  </button>
+                  <span className={cn("note_foot")}>
                     Already have an account? <Link to="/sign-in">Sign In</Link>.
                   </span>
                 </li>
@@ -155,6 +135,6 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
       }
   </section>
   )
-};
+}
 
 export default connect(mapUserStateToProps, {})(SignUp);

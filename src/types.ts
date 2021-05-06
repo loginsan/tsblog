@@ -1,45 +1,47 @@
-export type User = {
-  email?: string,
-  token?: string,
-  username?: string,
-  bio?: string,
-  image?: string | null,
-  password?: string,
-}
-
-export type Profile = {
-  username?: string,
+interface Person  {
+  username: string,
   bio?: string,
   image?: string,
+}
+
+export interface User extends Person  {
+  email?: string,
+  password?: string,
+  token?: string,
+}
+
+export interface Profile extends Person {
   following?: boolean,
 }
 
-export type Article = {
-  slug?: string,
-  title?: string,
-  description?: string,
-  body?: string,
+export interface ArticleCore {
+  title: string,
+  description: string,
+  body: string,
   tagList?: string[],
-  createdAt?: string,
-  updatedAt?: string,
-  favorited?: boolean,
-  favoritesCount?: number,
-  author?: Profile,
 }
 
-export type Comment = {
-  id?: number,
-  createdAt?: string,
-  updatedAt?: string,
-  body?: string,
-  author?: Profile,
+export interface Article extends ArticleCore {
+  slug: string,
+  author: Profile,
+  createdAt: string,
+  updatedAt: string,
+  favorited: boolean,
+  favoritesCount: number,
+}
+
+export interface Comment {
+  id: number,
+  body: string,
+  author: Profile,
+  createdAt: string,
+  updatedAt: string,
 }
 
 export type Tag = {
   order: number,
   text: string,
 }
-
 
 export type ArticleData = {
   article: Article,
@@ -48,6 +50,10 @@ export type ArticleData = {
 export type ArticlesData = {
   articles: Article[],
   articlesCount: number,
+}
+
+export type PostArticle = {
+  article: ArticleCore,
 }
 
 export type UserData = {
@@ -66,17 +72,18 @@ export type CommentsData = {
   comments: Comment[],
 }
 
-export interface UserMenuProps {
+interface BasicProps {
   loading: boolean,
   error: string,
+}
+
+export interface UserMenuProps extends BasicProps {
   user: User,
   isLogged: boolean,
 }
 
-export interface ArticleFormProps {
-  loading: boolean,
-  error: string,
-  article: Article,
+export interface ArticleFormProps extends BasicProps {
+  article: ArticleCore,
   slug: string,
   formTitle: string,
   tagList: Tag[],

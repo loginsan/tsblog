@@ -1,6 +1,5 @@
 import { Dispatch } from 'react';
-import api from '../services/APIService';
-import { ProfileData, ArticlesData } from '../types';
+import api from '../../services/APIService';
 import {
   FETCH_PROFILE_LOADING,
   FETCH_PROFILE_ERROR,
@@ -8,60 +7,41 @@ import {
   FETCH_AUTHOR_LIST_LOADING,
   FETCH_AUTHOR_LIST_ERROR,
   FETCH_AUTHOR_LIST,
-} from './constants';
+} from '../constants';
+import { ProfileData, ArticlesData, ProfileAction } from './types';
 
 type Api = typeof api;
-
-// export interface ProfileLoading {
-//   type: typeof FETCH_PROFILE_LOADING,
-//   payload: boolean,
-// }
-
-// export interface ProfileError {
-//   type: typeof FETCH_PROFILE_ERROR,
-//   payload: string,
-// }
-
-// export interface ProfileSuccess {
-//   type: typeof FETCH_PROFILE,
-//   payload: ProfileData,
-// }
-
-export type ProfileAction = {
-  type: string,
-  payload: boolean | string | ProfileData | ArticlesData,
-}
 
 
 export const fetchProfileLoading = (flag: boolean): ProfileAction => ({ 
   type: FETCH_PROFILE_LOADING, 
   payload: flag,
-});
+}) as const;
 
 export const fetchProfileError = (msg: string): ProfileAction => ({ 
   type: FETCH_PROFILE_ERROR, 
   payload: msg,
-});
+}) as const;
 
 export const fetchProfile = (data: ProfileData): ProfileAction => ({
   type: FETCH_PROFILE,
   payload: data,
-});
+}) as const;
 
 export const fetchAuthorListLoading = (flag: boolean): ProfileAction => ({ 
   type: FETCH_AUTHOR_LIST_LOADING, 
   payload: flag,
-});
+}) as const;
 
 export const fetchAuthorListError = (msg: string): ProfileAction => ({ 
   type: FETCH_AUTHOR_LIST_ERROR, 
   payload: msg,
-});
+}) as const;
 
 export const fetchAuthorList = (data: ArticlesData): ProfileAction => ({
   type: FETCH_AUTHOR_LIST,
   payload: data,
-});
+}) as const;
 
 async function fetchAuthorProfile(
   service: Api, 
@@ -81,7 +61,7 @@ async function fetchAuthorProfile(
 export function asyncGetProfile(username: string, token: string) {
   return (dispatch: Dispatch<ProfileAction>) => {
     fetchAuthorProfile(api, dispatch, username, token);
-  };
+  }
 }
 
 async function fetchAuthorArticles(
@@ -103,5 +83,5 @@ async function fetchAuthorArticles(
 export function asyncGetAuthorArticles(author: string, token: string) {
   return (dispatch: Dispatch<ProfileAction>) => {
     fetchAuthorArticles(api, dispatch, author, token);
-  };
+  }
 }

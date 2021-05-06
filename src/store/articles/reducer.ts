@@ -1,5 +1,3 @@
-import { Article, ArticlesData, ArticleData } from '../types';
-import { ArticlesAction } from './articlesActions';
 import {
   LOAD_ARTICLES,
   LOAD_ARTICLES_ERROR,
@@ -8,19 +6,14 @@ import {
   FAVORITE_ARTICLE_FETCHING,
   FAVORITE_ARTICLE_ERROR,
   FAVORITE_ARTICLE,
-} from './constants';
+} from '../constants';
+import {
+  ArticlesData,
+  ArticleData,
+  ArticlesAction,
+  ArticlesState,
+} from './types';
 
-
-export interface ArticlesState {
-  loading: boolean,
-  error: string,
-  page: number,
-  list: Article[],
-  total: number,
-  tag: string | null,
-  favoriteFetching: boolean,
-  favoriteError: string,
-}
 
 const initialState: ArticlesState = {
   loading: true,
@@ -31,7 +24,7 @@ const initialState: ArticlesState = {
   tag: null,
   favoriteFetching: false,
   favoriteError: '',
-};
+}
 
 export default function articles(
   state = initialState, 
@@ -44,14 +37,14 @@ export default function articles(
         ...state,
         loading: action.payload as boolean,
         error: '',
-      };
+      }
     
     case LOAD_ARTICLES_ERROR:
       return { 
         ...state, 
         loading: false,
         error: action.payload as string,
-      };
+      }
     
     case LOAD_ARTICLES: {
       const data = action.payload as ArticlesData;
@@ -71,14 +64,14 @@ export default function articles(
         ...state,
         favoriteError: '',
         favoriteFetching: action.payload as boolean,
-      };
+      }
     
     case FAVORITE_ARTICLE_ERROR:
       return {
         ...state,
         favoriteError: action.payload as string,
         favoriteFetching: false,
-      };
+      }
     
     case FAVORITE_ARTICLE: {
       const updated = (action.payload as ArticleData).article;
@@ -96,7 +89,7 @@ export default function articles(
           }
           return elem;
         }),
-      };
+      }
     }
 
     default:

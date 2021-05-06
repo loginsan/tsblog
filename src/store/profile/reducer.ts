@@ -1,5 +1,3 @@
-import { Profile, ProfileData, Article, ArticlesData } from '../types';
-import { ProfileAction } from './profileActions';
 import {
   FETCH_PROFILE_LOADING,
   FETCH_PROFILE_ERROR,
@@ -7,28 +5,24 @@ import {
   FETCH_AUTHOR_LIST_LOADING,
   FETCH_AUTHOR_LIST_ERROR,
   FETCH_AUTHOR_LIST,
-} from './constants';
+} from '../constants';
+import { 
+  ProfileState, 
+  ProfileAction, 
+  ProfileData, 
+  ArticlesData,
+} from './types';
 
-
-export interface ProfileState {
-  loading: boolean,
-  error: string,
-  profile: Profile,
-  listLoading: boolean,
-  listError: string,
-  list: Article[],
-  total: number,
-}
 
 const initialState: ProfileState = {
   loading: false,
   error: '',
-  profile: {},
+  profile: { username: '' },
   listLoading: false,
   listError: '',
   list: [],
   total: 0,
-};
+}
 
 export default function profile(
   state = initialState, 
@@ -41,14 +35,14 @@ export default function profile(
         ...state,
         error: '',
         loading: action.payload as boolean
-      };
+      }
     
     case FETCH_PROFILE_ERROR:
       return { 
         ...state, 
         error: action.payload as string,
         loading: false,
-      };
+      }
     
     case FETCH_PROFILE: {
       const data = action.payload as ProfileData;
@@ -56,7 +50,7 @@ export default function profile(
         ...state, 
         loading: false,
         profile: data.profile,
-      };
+      }
     }
 
     case FETCH_AUTHOR_LIST_LOADING:
@@ -64,14 +58,14 @@ export default function profile(
         ...state,
         listError: '',
         listLoading: action.payload as boolean
-      };
+      }
     
     case FETCH_AUTHOR_LIST_ERROR:
       return { 
         ...state, 
         listError: action.payload as string,
         listLoading: false,
-      };
+      }
     
     case FETCH_AUTHOR_LIST: {
       const data = action.payload as ArticlesData;
@@ -80,10 +74,10 @@ export default function profile(
         listLoading: false,
         list: data.articles,
         total: data.articlesCount,
-      };
+      }
     }
 
     default:
       return state;
   }
-};
+}

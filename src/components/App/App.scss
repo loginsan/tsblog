@@ -8,7 +8,6 @@ body {
 }
 
 .app {
-  max-width: 1440px;
   margin: 0 auto;
   padding-bottom: 50px;
 }
@@ -125,6 +124,8 @@ a.link_sign-in:hover, a.link_sign-in:focus {
 
 .app-main {
   padding-top: 26px;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .page {
@@ -145,6 +146,12 @@ a.link_sign-in:hover, a.link_sign-in:focus {
 .article_short {
   border-radius: 2px 5px 5px 2px;
   margin-bottom: 26px;
+}
+.article_clone {
+  opacity: .5;
+}
+.article_clone:hover {
+  opacity: .95;
 }
 
 .article__head {

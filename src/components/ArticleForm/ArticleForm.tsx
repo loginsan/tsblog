@@ -4,24 +4,17 @@ import { Link } from 'react-router-dom';
 
 import { useForm } from 'react-hook-form';
 import { useCookies } from 'react-cookie';
+import cn from 'classnames';
 
 import * as kit from '../../common';
 import { ArticleFormProps, Tag } from '../../types';
-import { EditState } from '../../store/editReducer';
-import { UserState } from '../../store/userReducer';
-import { ArticleState } from '../../store/singleReducer';
-import { asyncCreateArticle, asyncUpdateArticle,
-  initTags, editTag, addTag, removeTag, clearEdit } from '../../store/editActions';
-import { asyncGetArticle, ArticleAction } from '../../store/articlesActions';
+import { EditState } from '../../store/edit/types';
+import { UserState } from '../../store/user/types';
+import { ArticleState, ArticleAction, ArticleCore } from '../../store/single/types';
+import { asyncCreateArticle, asyncUpdateArticle, initTags, editTag, addTag,
+  removeTag, clearEdit } from '../../store/edit/actions';
+import { asyncGetArticle } from '../../store/single/actions';
 
-// const mock: ArticleData = {
-//     "article": {
-//         "title": "Some kind of wonderful",
-//         "description": "A film i didn't saw yet, and Lea Thompson is acting in it",
-//         "body": "# Some header\n\nA paragraph of **Some kind of wonderful** film synopsis…",
-//         "tagList": [ "some", "kind", "of", "wonderful", "film", "lea thompson" ]
-//     }
-// }
 
 interface FieldSet {
   title: string,
@@ -47,18 +40,17 @@ function buildTagLines(
   function handleChange(evt: React.ChangeEvent<HTMLInputElement>, key: number) {
     const val = evt?.currentTarget.value;
     const tag: Tag = { order: key, text: val };
-    // console.log(val);
     dispatchFn( editTag(tag) )
   }
 
   return tags.map(elem => {
-    const tagId = `tag-index_${elem.order}`;
     const key = elem.order;
+    const tagId = `tag-index_${key}`;
     
     return (
-      <li className="tag-line" key={key}>
+      <li className={cn("tag-line")} key={key}>
         <input type="text" id={tagId}
-          className="control control_input control_tag"
+          className={cn("control", "control_input", "control_tag")}
           placeholder="Tag"
           autoComplete="off"
           defaultValue={elem.text}
@@ -66,13 +58,13 @@ function buildTagLines(
           onChange={(evt) => handleChange(evt, key)}
         />
         <button type="button" 
-          className="btn_delete btn_tag"
+          className={cn("btn_delete", "btn_tag")}
           onClick={() => removeTagField(key)}
         >
           Delete
         </button>
         <button type="button"
-          className="btn_add btn_tag"
+          className={cn("btn_add", "btn_tag")}
           onClick={() => addTagField(key)}
         >
           Add Tag
@@ -142,17 +134,15 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
   useEffect(() => {
     if (user.username) {
       setVisible(!slug || !!original.title || 
-        user.username === original.author?.username);
+        user.username === original.author.username);
     }
   }, [slug, user, original]);
 
   function onSubmit(data: FieldSet) {
-    const articleSend = {
+    const articleSend: ArticleCore = {
       ...data,
       tagList: tagList.map(({ order, text }) => text)
     };
-    // console.log(data);
-    // console.log(tagList);
     if (slug) {
       dispatch( asyncUpdateArticle(slug, articleSend, userToken) );
       dispatch( clearEdit(true) );
@@ -162,11 +152,8 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
     setSubmitted(true);
   }
 
-  // useEffect(() => { console.log(tagList) }, [tagList]);
-
-
   return (
-    <section className="form form_article">
+    <section className={cn("form", "form_article")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
 
@@ -188,62 +175,35 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
 
       { submitted &&
         kit.notifyBox("Form submitted successfully",
-          (<>You can now&nbsp;
-            <Link to={`/articles/${article.slug}`}>view the article</Link>
+          slug? (<>You can now&nbsp;
+            <Link to={`/articles/${slug}`}>view the article</Link>
+          </>) : (<>You can now&nbsp;
+            <Link to="/articles/">view articles</Link> 
+            {original && original.slug? original.slug : '-'}
           </>)
         )
       }
 
       { visible && !submitted && (<>
-        <h2 className="form__title">{ formTitle }</h2>
-        <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
-          <ul className="form__field-list nolist">
-            <li className="form__field">
-              <label className="label" htmlFor="title">Title</label>
-              <input type="text" id="title"
-                className={`control control_input${errors.title && " error"}`}
-                placeholder="Title"
-                { ...register("title", { required: "true" }) }
-              />
-              { kit.fieldErrorTip(errors.title) }
-            </li>
-            {/* kit.formInputField("title", "Title", errors.title, register("title")) */}
-            <li className="form__field">
-              <label className="label" htmlFor="description">Short description</label>
-              <input type="text" id="description"
-                className={`control control_input${errors.description && " error"}`}
-                placeholder="Short description"
-                { ...register("description", { required: "true" }) }
-              />
-              { kit.fieldErrorTip(errors.description) }
-            </li>
-            {/* kit.formInputField("description", "Short description", errors.description, register("description")) */}
-            <li className="form__field">
-              <label className="label" htmlFor="body">Text</label>
-              <textarea id="body"
-                className={`control control_textarea${errors.body? " error" : ""}`}
-                cols={30} rows={5}
-                placeholder="Text"
-                { ...register("body", { required: "true" }) }
-              />
-              { kit.fieldErrorTip(errors.body) }
-            </li>
-            {/* kit.formTextAreaField("body", "Text", errors.body, register("body")) */}
-            {/* kit.formInputField("tagList", "Tags", errors.tagList, register("tagList")) */}
+        <h2 className={cn("form__title")}>{ formTitle }</h2>
+        <form className={cn("form__body")} onSubmit={ handleSubmit(onSubmit) }>
+          <ul className={cn("form__field-list", "nolist")}>
+            { kit.formInputField("title", "Title", errors.title, register("title", { required: "Value required" })) }
+            { kit.formInputField("description", "Short description", errors.description, register("description", { required: "Value required" })) }
+            { kit.formTextAreaField("body", "Text", errors.body, register("body", { required: "Value required" })) }
             
-            
-            <li className="form__field">
-              <label className="label" htmlFor="tag-index_0">Tags</label>
-              <ul className="tags-list nolist">
+            <li className={cn("form__field")}>
+              <label className={cn("label")} htmlFor="tag-index_0">Tags</label>
+              <ul className={cn("tags-list", "nolist")}>
               { buildTagLines(tagList, dispatch) }
               </ul>
             </li>
             
-            <li className="form__field">
-              <button type="submit" className="btn_submit">
+            <li className={cn("form__field")}>
+              <button type="submit" className={cn("btn_submit")}>
                 { slug? 'Save' : 'Send' }
               </button>
-              { slug && (<span className="note_foot">
+              { slug && (<span className={cn("note_foot")}>
                   * Editing article <Link to={`/articles/${slug}`}>{ slug }</Link> …
                 </span>) }
             </li>

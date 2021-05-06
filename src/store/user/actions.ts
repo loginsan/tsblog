@@ -1,9 +1,5 @@
 import { Dispatch } from 'react';
-import api from '../services/APIService';
-import {
-  UserData, 
-  User,
-} from '../types';
+import api from '../../services/APIService';
 import {
   FETCH_USER_LOADING,
   FETCH_USER_ERROR,
@@ -12,65 +8,27 @@ import {
   UPDATE_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
-} from './constants';
+} from '../constants';
+import { UserData, User, UserAction } from './types';
 
 type Api = typeof api;
 
 
-export interface LoginLoading {
-  type: typeof FETCH_USER_LOADING,
-  flag: boolean,
-}
-
-export interface LoginError {
-  type: typeof FETCH_USER_ERROR,
-  error: string,
-}
-
-export interface LoginSuccess {
-  type: typeof LOGIN_USER,
-  data: UserData,
-}
-
-export interface LogoutSuccess {
-  type: typeof LOGOUT_USER,
-}
-
-export interface UpdateUserSuccess {
-  type: typeof UPDATE_USER,
-  data: UserData,
-}
-
-export interface RegisterSuccess {
-  type: typeof REGISTER_USER,
-  data: UserData,
-}
-
-export interface GetCurrentUser {
-  type: typeof GET_CURRENT_USER
-  data: UserData
-}
-
-
-export type UserAction = LoginLoading|LoginError|LoginSuccess|
-  LogoutSuccess|UpdateUserSuccess|RegisterSuccess|GetCurrentUser;
-
-
 export const fetchUserLoading = (flag: boolean): UserAction => ({ 
   type: FETCH_USER_LOADING, 
-  flag,
-});
+  payload: flag,
+}) as const;
 
 export const fetchUserError = (msg: string): UserAction => ({ 
   type: FETCH_USER_ERROR, 
-  error: msg,
-});
+  payload: msg,
+}) as const;
 
 
 export const loginUser = (data: UserData): UserAction => ({
   type: LOGIN_USER,
-  data,
-});
+  payload: data,
+}) as const;
 
 async function fetchAuth(
   service: Api, 
@@ -90,19 +48,20 @@ async function fetchAuth(
 export function asyncGetAuth(email: string, pass: string) {
   return (dispatch: Dispatch<UserAction>) => {
     fetchAuth(api, dispatch, email, pass);
-  };
+  }
 }
 
 
 export const logoutUser = (): UserAction => ({
   type: LOGOUT_USER,
-});
+  payload: true,
+}) as const;
 
 
 export const updateUser = (data: UserData): UserAction => ({
   type: UPDATE_USER,
-  data,
-});
+  payload: data,
+}) as const;
 
 async function fetchUpdateUser(
   service: Api, 
@@ -128,8 +87,8 @@ export function asyncUpdateProfile(token: string, user: User) {
 
 export const registerUser = (data: UserData): UserAction => ({
   type: REGISTER_USER,
-  data,
-});
+  payload: data,
+}) as const;
 
 async function fetchRegisterUser(
   service: Api, 
@@ -154,8 +113,8 @@ export function asyncRegister(user: User) {
 
 export const getCurrentUser = (data: UserData): UserAction => ({
   type: GET_CURRENT_USER,
-  data,
-});
+  payload: data,
+}) as const;
 
 async function fetchCurrentUser(
   service: Api, 

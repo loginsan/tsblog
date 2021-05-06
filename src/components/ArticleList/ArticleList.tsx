@@ -2,17 +2,25 @@ import React, { Dispatch, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, connect } from 'react-redux';
 import { useCookies } from 'react-cookie';
-import { Pagination } from 'antd';
-import { asyncGetArticles, setCurrentPage, ArticlesAction, asyncSetFavorite } from '../../store/articlesActions';
-import { ArticlesState } from '../../store/articlesReducer';
-import { Article } from '../../types';
+import { Pagination, Popover } from 'antd';
+import cn from 'classnames';
+import {
+  Article, 
+  ArticlesState, 
+  ArticlesAction 
+} from '../../store/articles/types';
+import {
+  asyncGetArticles,
+  setCurrentPage, 
+} from '../../store/articles/actions';
+import { asyncSetFavorite } from '../../store/single/actions';
 import * as kit from '../../common';
 
 
 type ClickLink = (
   evt: React.MouseEvent<HTMLAnchorElement>,
-  slug: string | undefined,
-  favorited: boolean | undefined,
+  slug: string,
+  favorited: boolean,
   token: string
 ) => void;
 
@@ -25,41 +33,53 @@ function renderArticleShort(
 
   const { slug, title, description, tagList, 
     updatedAt, favorited, favoritesCount, author } = props;
-  const likeClass = `like${favorited? "" : " like_unset"}`;
+  const LikeLink = (<Link to="/sign-in" 
+    className={cn('like', { 'like_unset': !favorited })} 
+    title={favorited? 'Remove from Favorite' : 'Add to Favorite'}
+    onClick={(evt) => favorite(evt, slug, favorited, token)}
+  >
+    {favoritesCount}
+  </Link>);
+  const PopoverLink = (
+    <Popover 
+      content={ kit.guestPop }
+      trigger="click"
+      title="Like article?" 
+      placement="right"
+    >
+      { LikeLink }
+    </Popover>
+  );
+
   return (
-  <>
-    {/* {<Link to={`/articles/${slug}`}>{ randomArticleImage() }</Link>} */}
-    <header className="article__head">
-      <div className="article__info">
+    <header className={cn("article__head")}>
+      <div className={cn("article__info")}>
         <h2>
-          <Link className="article__title" to={`/articles/${slug}`}>{title}</Link>
-          <Link to="/sign-in" 
-            className={likeClass} 
-            title={favorited? 'Remove from Favorite' : 'Add to Favorite'}
-            onClick={(evt) => favorite(evt, slug, favorited, token)}
-          >
-            {favoritesCount}
-          </Link>
+          <Link className={cn("article__title")} to={`/articles/${slug}`}>{title}</Link>
+          { token === ''? PopoverLink : LikeLink }
         </h2>
         { kit.placeTags(tagList) }
-        <p className="article__excerpt">{description}</p>
+        <p className={cn("article__excerpt")}>{description}</p>
       </div>
-      <aside className="pub-info">
-        <Link to={`/profiles/${ encodeURI(author && author.username || '') }`} className="author" title="Author">
+      <aside className={cn("pub-info")}>
+        <Link
+          to={`/profiles/${ encodeURI(author.username) }`} 
+          className={cn("author")} 
+          title="Author"
+        >
           <span>
-            { author && author.username }
-            <time className="pub-date" title={updatedAt}>
+            { author.username }
+            <time className={cn("pub-date")} title={updatedAt}>
               { kit.formatDate(updatedAt) }
             </time>
           </span>
-          <img src={ author && author.image } title={ author && author.bio } 
-            alt="Avatar" className="avatar"
+          <img src={ author.image } title={ author.bio } 
+            alt="Avatar" className={cn("avatar")}
             onError={ kit.avatarFallback }
           />
         </Link>
       </aside>
     </header>
-  </>
   )
 }
 
@@ -79,17 +99,18 @@ const ArticleList: React.FC<ArticleListProps> = (props) => {
   const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
+  let mainTitle = '';
+  let mainAuthor = '';
 
   function toggleFavorite(
     evt: React.MouseEvent<HTMLAnchorElement>,
-    slug: string | undefined,
-    favorited: boolean | undefined,
+    slug: string,
+    favorited: boolean,
     token: string
   ) {
     if (token) {
       evt.preventDefault();
-      // console.log(slug, favorited);
-      dispatch( asyncSetFavorite(slug || '', !!favorited, token) );
+      dispatch( asyncSetFavorite(slug, !!favorited, token) );
     }
   }
   
@@ -99,12 +120,23 @@ const ArticleList: React.FC<ArticleListProps> = (props) => {
   }, [dispatch, page, userToken]);
 
   const articles = !loading && !error && (
-    <ul className="article-list nolist">
-      { list.map(article => (
-          <li key={ article.slug } className="article article_short">
-            { renderArticleShort(article, userToken, toggleFavorite) }
-          </li>
-        ))
+    <ul className={cn("article-list", "nolist")}>
+      { list.map(article => {
+          const { title, slug, author } = article;
+          const isClone = title === mainTitle && author.username === mainAuthor;
+          if (!isClone) {
+            mainTitle = title;
+            mainAuthor = author.username;
+          }
+          return (
+            <li
+              key={ slug }
+              className={cn('article', 'article_short', { 'article_clone': isClone })}
+            >
+              { renderArticleShort(article, userToken, toggleFavorite) }
+            </li>
+          )
+        })
       }        
     </ul>
   );
@@ -120,14 +152,14 @@ const ArticleList: React.FC<ArticleListProps> = (props) => {
   );
 
   return (
-    <section className="page">
+    <section className={cn("page")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
       { articles }
       { elemPager }
     </section>
   )
-};
+}
 
 const mapStateToProps = (state: {articles: ArticlesState}) => ({
   loading: state.articles.loading, 

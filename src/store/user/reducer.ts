@@ -1,13 +1,3 @@
-import { User } from '../types';
-import { 
-  UserAction, 
-  LoginLoading, 
-  LoginError, 
-  LoginSuccess, 
-  UpdateUserSuccess,
-  RegisterSuccess,
-  GetCurrentUser,
-} from './userActions';
 import {
   FETCH_USER_LOADING,
   FETCH_USER_ERROR,
@@ -16,22 +6,16 @@ import {
   UPDATE_USER,
   REGISTER_USER,
   GET_CURRENT_USER,
-} from './constants';
+} from '../constants';
+import { UserState, UserData, UserAction } from './types';
 
-
-export interface UserState {
-  loading: boolean,
-  error: string,
-  user: User,
-  isLogged: boolean,
-}
 
 const initialState: UserState = {
   loading: false,
   error: '',
-  user: {},
+  user: { username: '', token: '' },
   isLogged: false,
-};
+}
 
 export default function user(
   state = initialState, 
@@ -43,23 +27,23 @@ export default function user(
       return { 
         ...state,
         error: '',
-        loading: (action as LoginLoading).flag
-      };
+        loading: action.payload as boolean
+      }
     
     case FETCH_USER_ERROR:
       return { 
         ...state, 
-        error: (action as LoginError).error,
+        error: action.payload as string,
         loading: false,
-      };
+      }
     
     case LOGIN_USER:
       return { 
         ...state, 
         loading: false,
-        user: (action as LoginSuccess).data.user,
+        user: (action.payload as UserData).user,
         isLogged: true,
-      };
+      }
     
     case LOGOUT_USER:
       return initialState;
@@ -68,34 +52,35 @@ export default function user(
       return {
         ...state,
         loading: false,
-        user: (action as UpdateUserSuccess).data.user,
-      };
+        user: (action.payload as UserData).user,
+      }
     
     case REGISTER_USER:
       return {
         ...state,
         loading: false,
-        user: (action as RegisterSuccess).data.user,
-      };
+        user: (action.payload as UserData).user,
+      }
     
     case GET_CURRENT_USER:
       return {
         ...state,
         loading: false,
-        user: (action as GetCurrentUser).data.user,
+        user: (action.payload as UserData).user,
         isLogged: true,
       }
 
     default:
       return state;
   }
-};
+}
 
 export function mapUserStateToProps(state: {user: UserState}) {
+  const props = state.user;
   return {
-    loading: state.user.loading, 
-    error: state.user.error,
-    user: state.user.user,
-    isLogged: state.user.isLogged,
+    loading: props.loading, 
+    error: props.error,
+    user: props.user,
+    isLogged: props.isLogged,
   }
 }

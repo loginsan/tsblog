@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, connect } from 'react-redux';
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
+import cn from 'classnames';
 
-import { mapUserStateToProps } from '../../store/userReducer';
-import { asyncGetAuth } from '../../store/userActions';
-import * as kit from '../../common';
 import { UserMenuProps } from '../../types';
+import { mapUserStateToProps } from '../../store/user/reducer';
+import { asyncGetAuth } from '../../store/user/actions';
+import * as kit from '../../common';
 
 
 interface FieldSet {
@@ -30,12 +31,13 @@ const SignIn: React.FC<UserMenuProps> = (props) => {
   const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
   const [cookies, setCookie] = useCookies(['token']);
+  const history = useHistory();
 
   kit.setPageTitle(`Sign-In Form`);
 
   useEffect(() => {
     if (user.token && !cookies.token) {
-      setCookie('token', user.token);
+      setCookie('token', user.token, { path: "/" });
     }
   }, [user, cookies, setCookie]);
 
@@ -47,9 +49,7 @@ const SignIn: React.FC<UserMenuProps> = (props) => {
   } = useForm<FieldSet>({ resolver: yupResolver(schema) });
 
   function onSubmit(data: FieldSet) {
-    // console.log(data);
     dispatch( asyncGetAuth(data.email, data.password) );
-    //  bambrillo@ya.ru  lin_RwB180 → S1mpleP@ss
   }
 
   useEffect(() => {
@@ -68,48 +68,34 @@ const SignIn: React.FC<UserMenuProps> = (props) => {
     }
   }, [error, setError]);
 
+  useEffect(() => {
+    if (isLogged) {
+      setTimeout(() => { history.push(`/profiles/${user.username}`) }, 3000);
+    }
+  }, [isLogged, history, user.username]);
+
   return (
-    <section className="form">
+    <section className={cn("form")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
       { !loading && !error && isLogged
         ? (<>
           <h2>{`Welcome, ${user.username}!`}</h2>
-          <p className="long-text">{`Your token is ${user.token}`}</p>
-          <p className="no-bottom-margin">
-            View <Link to={`/profiles/${user.username}`}>personal profile page…</Link>
+          <p className={cn("long-text")}>{`Your token is ${user.token}`}</p>
+          <p className={cn("no-bottom-margin")}>
+            You will be redirected to your <Link to={`/profiles/${user.username}`}>personal profile page…</Link>
           </p>
         </>)
         : (<>
-          <h2 className="form__title">Sign In</h2>
-          <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
-            <ul className="form__field-list nolist">
-              <li className="form__field">
-                <label className="label" htmlFor="email">
-                  Email address
-                </label>
-                <input type="email" id="email"
-                  className={`control control_input${errors.email? " error" : ""}`}
-                  placeholder="Email address"
-                  {...register("email")}
-                />
-                { kit.fieldErrorTip(errors.email) }
-              </li>
-              <li className="form__field">
-                <label className="label" htmlFor="password">
-                  Password
-                </label>
-                <input type="password" id="password"
-                  className={`control control_input${errors.password? " error" : ""}`}
-                  placeholder="Password"
-                  {...register("password")}
-                />
-                { kit.fieldErrorTip(errors.password) }
-              </li>
-              
-              <li className="form__field">
-                <button type="submit" className="btn_submit">Login</button>
-                <span className="note_foot">
+          <h2 className={cn("form__title")}>Sign In</h2>
+          <form className={cn("form__body")} onSubmit={ handleSubmit(onSubmit) }>
+            <ul className={cn("form__field-list", "nolist")}>
+              { kit.formInputField("email", "Email address", errors.email, register("email")) }
+              { kit.formInputField("password", "Password", errors.password, register("password")) }
+                            
+              <li className={cn("form__field")}>
+                <button type="submit" className={cn("btn_submit")}>Login</button>
+                <span className={cn("note_foot")}>
                   Don't have an account? <Link to="/sign-up">Sign Up</Link>.
                 </span>
               </li>
@@ -119,7 +105,6 @@ const SignIn: React.FC<UserMenuProps> = (props) => {
         ) }
     </section>
   )
-};
+}
 
 export default connect(mapUserStateToProps, {})(SignIn);
-// export default SignIn;

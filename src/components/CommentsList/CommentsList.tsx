@@ -1,6 +1,7 @@
 import React from 'react';
 import { useStore } from 'react-redux';
 import { Link } from 'react-router-dom';
+import cn from 'classnames';
 import { Comment } from '../../types';
 import { formatDate, elemLoading, elemAlert } from '../../common';
 
@@ -15,15 +16,15 @@ function renderComments(data: Comment[]): React.ReactNode {
   const items = data.map(elem => {
     const { id, updatedAt, body, author } = elem;
     const key = `comment-${id}-${updatedAt}`;
-    return (<li key={key} className="long-text">
+    return (<li key={key} className={cn("long-text")}>
       <em>{ body }</em>, &mdash;&nbsp; 
-      <Link to={`/profiles/${author && author.username}`}>
-        {author && author.username}
+      <Link to={`/profiles/${author.username}`}>
+        {author.username}
       </Link>
-      &nbsp;by <time className="pub-time">{ formatDate(updatedAt) }</time>
+      &nbsp;by <time className={cn("pub-time")}>{ formatDate(updatedAt) }</time>
     </li>)
   });
-  return <ul className="bullets">{ items }</ul>;
+  return <ul className={cn("bullets")}>{ items }</ul>;
 }
 
 const CommentsList: React.FC<CommentsProps> = ({ data, token = '' }) => {
@@ -34,7 +35,7 @@ const CommentsList: React.FC<CommentsProps> = ({ data, token = '' }) => {
     <div>
       <h3>{ data.length > 0? 'Comments:' : 'No comments yet…' }</h3>
       { token !== '' && (
-        <sup className="long-text">
+        <sup className={cn("long-text")}>
           Authenticated users can post comments…
         </sup>) }
       

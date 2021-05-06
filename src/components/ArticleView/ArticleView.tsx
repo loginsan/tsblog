@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { useCookies } from 'react-cookie';
 import ReactMarkdown from 'react-markdown';
 import gfm from 'remark-gfm';
-import { asyncGetArticle, asyncGetComments, asyncSetFavorite, asyncDeleteArticle } from '../../store/articlesActions';
-import { ArticleState } from '../../store/singleReducer';
-import { UserState } from '../../store/userReducer';
+import cn from 'classnames';
+import {
+  asyncGetArticle,
+  asyncGetComments,
+  asyncSetFavorite,
+  asyncDeleteArticle
+} from '../../store/single/actions';
+import { ArticleState } from '../../store/single/types';
+import { UserState } from '../../store/user/types';
 import { Article, Comment, User } from '../../types';
 import CommentsList from '../CommentsList';
 import * as kit from '../../common';
@@ -23,7 +29,6 @@ interface ArticleViewProps {
 
 const ArticleView: React.FC<ArticleViewProps> = (props) => {
   const { slug, loading, error, article, comments, user } = props;
-  // console.log(user);
   const dispatch = useDispatch();
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
@@ -31,45 +36,46 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
   const { title, description, tagList, body, 
     updatedAt, favorited, favoritesCount, author } = article;
   kit.setPageTitle(title);
-  const likeClass = `like${favorited? "" : " like_unset"}`;
   const elemComments = <CommentsList data={comments} token={userToken} />;
 
 
   const [deleted, setDeleted] = useState(false);
-  const deletePromptRef = useRef<HTMLDivElement>(null);
+  const [hiddenConfirm, setHiddenConfirm] = useState(true);
+
   function deleteArticleClick(evt: React.MouseEvent<HTMLAnchorElement>) {
     evt.preventDefault();
-    kit.setElemVisibility(deletePromptRef.current, true);
-  };
+    setHiddenConfirm(false);
+  }
+
   function noDeleteClick(evt: React.MouseEvent<HTMLButtonElement>) {
-    kit.setElemVisibility(deletePromptRef.current, false);
-  };
+    setHiddenConfirm(true);
+  }
+
   function yesDeleteClick(evt: React.MouseEvent<HTMLButtonElement>) {
-    kit.setElemVisibility(deletePromptRef.current, false);
+    setHiddenConfirm(true);
     dispatch( asyncDeleteArticle(slug, userToken) );
     setDeleted(true);
-    // console.log('async delete fetching');
-  };
-// user.username === author!.username
+  }
+
   const elemControls = user !== undefined && author !== undefined && 
-    user.username === author!.username && (
-    <div className="edit-links">
+    user.username === author.username && (
+    <div className={cn("edit-links")}>
       <Link to="/" 
-        className="link link_delete-article"
+        className={cn("link", "link_delete-article")}
         onClick={deleteArticleClick}
       >
         Delete
       </Link>
-      <Link to={`/articles/${slug}/edit`} className="link link_edit-article">
+      <Link to={`/articles/${slug}/edit`} className={cn("link", "link_edit-article")}>
         Edit
       </Link>
-      <div className="delete-confirm hide" ref={deletePromptRef}>
+      <div className={cn('delete-confirm', { 'hide' : hiddenConfirm })}>
         <span>Are you sure to delete this article?</span>
-        <button type="button" className="btn" onClick={noDeleteClick}>
+        <button type="button" className={cn("btn")} onClick={noDeleteClick}>
           No
         </button>
         <button type="button" 
-          className="btn btn_primary"
+          className={cn("btn", "btn_primary")}
           onClick={yesDeleteClick}
         >
           Yes
@@ -90,14 +96,13 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
   }, [dispatch, slug, userToken]);
 
   const elemArticle = !loading && !error && !deleted && (
-    <article className="article article_full">
-      {/* {<picture>{ randomArticleImage() }</picture>} */}
-      <header className="article__head">
-        <div className="article__info">
+    <article className={cn("article", "article_full")}>
+      <header className={cn("article__head")}>
+        <div className={cn("article__info")}>
           <h2>
-            <Link className="article__title" to="/articles/" title={title}>{title}</Link>
+            <Link className={cn("article__title")} to="/articles/" title={title}>{title}</Link>
             <Link to="/sign-in" 
-              className={likeClass} 
+              className={cn('like', { 'like_unset': !favorited })}
               title={favorited? 'Remove from Favorite' : 'Add to Favorite'}
               onClick={toggleFavorite}
             >
@@ -105,18 +110,22 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
             </Link>
           </h2>
           { kit.placeTags(tagList) }
-          <p className="article__excerpt">{description}</p>
+          <p className={cn("article__excerpt")}>{description}</p>
         </div>
-        <aside className="pub-info">
-          <Link to={`/profiles/${ encodeURI(author && author.username || '') }`} className="author" title="Author">
+        <aside className={cn("pub-info")}>
+          <Link
+            to={`/profiles/${ encodeURI(author.username) }`}
+            className={cn("author")}
+            title="Author"
+          >
             <span>
-              { author && author.username }
-              <time className="pub-date" title={updatedAt}>
+              { author.username }
+              <time className={cn("pub-date")} title={updatedAt}>
                 { kit.formatDate(updatedAt) }
               </time>
             </span>
-            <img src={ author && author.image } title={ author && author.bio } 
-              alt="Avatar" className="avatar"
+            <img src={ author.image } title={ author.bio } 
+              alt="Avatar" className={cn("avatar")}
               onError={ kit.avatarFallback }
             />
           </Link>
@@ -126,20 +135,21 @@ const ArticleView: React.FC<ArticleViewProps> = (props) => {
         </aside>
       </header>
 
-      <main className="article__markdown">  
-        <ReactMarkdown plugins={[gfm]}>{ body || '' }</ReactMarkdown>
-      </main>
+      { body && (<main className={cn("article__markdown")}>  
+          <ReactMarkdown plugins={[gfm]}>{ body }</ReactMarkdown>
+        </main>)
+      }
       <hr />
       { elemComments }
     </article>
   );
 
   return (
-    <section className="page">
+    <section className={cn("page")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
       { !loading && !error && deleted && (
-        <article className="article article_full">
+        <article className={cn("article", "article_full")}>
           { kit.notifyBox("Article have been deleted", 
             "Have a nice time in Realworld Blog!") }
         </article>

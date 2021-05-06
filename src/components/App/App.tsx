@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-
 import { useStore, useDispatch } from 'react-redux';
 import { useCookies } from 'react-cookie';
 
 import 'antd/dist/antd.css';
+import cn from 'classnames';
 import Header from '../Header';
 import ArticleView from '../ArticleView';
 import ArticleList from '../ArticleList';
@@ -17,7 +17,7 @@ import EditArticle from '../EditArticle';
 import NewArticle from '../NewArticle';
 import './App.scss';
 
-import { asyncCurrentUser } from '../../store/userActions';
+import { asyncCurrentUser } from '../../store/user/actions';
 
 
 const App: React.FC = () => {
@@ -34,10 +34,10 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="app">
+      <div className={cn("app")}>
         <Header />
 
-        <main className="app-main">
+        <main className={cn("app-main")}>
           <Switch>
             <Route path="/" exact>
               <ArticleList />

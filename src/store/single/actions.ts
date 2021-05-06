@@ -1,17 +1,6 @@
 import { Dispatch } from 'react';
-import api from '../services/APIService';
-import { 
-  ArticlesData, 
-  ArticleData,
-  CommentsData,
-  Tag,
-} from '../types';
+import api from '../../services/APIService';
 import {
-  LOAD_ARTICLES,
-  LOAD_ARTICLES_ERROR,
-  LOAD_ARTICLES_LOADING,
-  SET_CURRENT_PAGE,
-  SET_CURRENT_TAG,
   VIEW_ARTICLE,
   VIEW_ARTICLE_LOADING,
   VIEW_ARTICLE_ERROR,
@@ -22,196 +11,61 @@ import {
   FAVORITE_ARTICLE_ERROR,
   FAVORITE_ARTICLE,
   DELETE_ARTICLE,
-} from './constants';
+} from '../constants';
+import { ArticleData, CommentsData, ArticleAction } from './types';
 
 type Api = typeof api;
 
 
-// Actions Interfaces
-export interface ArticlesLoading {
-  type: typeof LOAD_ARTICLES_LOADING,
-  payload: boolean,
-}
-
-export interface ArticlesError {
-  type: typeof LOAD_ARTICLES_ERROR,
-  payload: string,
-}
-
-export interface ArticlesSuccess {
-  type: typeof LOAD_ARTICLES,
-  payload: ArticlesData, 
-}
-
-export interface PageNum {
-  type: typeof SET_CURRENT_PAGE,
-  payload: number,
-}
-
-export interface ArticleView {
-  type: typeof VIEW_ARTICLE,
-  payload: ArticleData,
-}
-
-export interface ArticleLoading {
-  type: typeof VIEW_ARTICLE_LOADING,
-  payload: boolean,
-}
-
-export interface ArticleError {
-  type: typeof VIEW_ARTICLE_ERROR,
-  payload: string,
-}
-
-interface ArticleTag {
-  type: typeof SET_CURRENT_TAG,
-  payload: string | null,
-}
-
-export interface CommentsView {
-  type: typeof FETCH_COMMENTS,
-  payload: CommentsData,
-}
-
-export interface CommentsLoading {
-  type: typeof FETCH_COMMENTS_LOADING,
-  payload: boolean,
-}
-
-export interface CommentsError {
-  type: typeof FETCH_COMMENTS_ERROR,
-  payload: string,
-}
-
-export interface FavoriteFetching {
-  type: typeof FAVORITE_ARTICLE_FETCHING,
-  payload: boolean,
-}
-
-export interface FavoriteError {
-  type: typeof FAVORITE_ARTICLE_ERROR,
-  payload: string,
-}
-
-export interface FavoriteUpdate {
-  type: typeof FAVORITE_ARTICLE,
-  payload: ArticleData,
-}
-
-
-// export type ArticlesAction = ArticlesLoading|ArticlesError|
-//   ArticlesSuccess|PageNum;
-export type ArticlesAction = {
-  type: string,
-  payload: boolean | string | number | ArticlesData | ArticleData;
-};
-// export type ArticleAction = ArticleLoading|ArticleError|ArticleView;
-export type ArticleAction = {
-  type: string,
-  payload: boolean | string | number | string[] | 
-    ArticleData | CommentsData | Tag;
-};
-
-
-// Action Creators
-export const articlesListLoading = (flag: boolean): ArticlesAction => ({ 
-  type: LOAD_ARTICLES_LOADING, 
-  payload: flag,
-});
-
-export const articlesListError = (msg: string): ArticlesAction => ({ 
-  type: LOAD_ARTICLES_ERROR, 
-  payload: msg,
-});
-
-export const articlesListSuccess = (data: ArticlesData): ArticlesAction => ({
-  type: LOAD_ARTICLES,
-  payload: data,
-});
-
 export const viewArticleLoading = (flag: boolean): ArticleAction => ({ 
   type: VIEW_ARTICLE_LOADING, 
   payload: flag,
-});
+}) as const;
 
 export const viewArticleError = (msg: string): ArticleAction => ({ 
   type: VIEW_ARTICLE_ERROR, 
   payload: msg,
-});
+}) as const;
 
 export const viewArticle = (data: ArticleData): ArticleAction => ({
   type: VIEW_ARTICLE,
   payload: data,
-});
-
-export const setCurrentPage = (num: number): PageNum => ({ 
-  type: SET_CURRENT_PAGE, 
-  payload: num,
-});
-
-export const setCurrentTag = (tag: string | null): ArticleTag => ({ 
-  type: SET_CURRENT_TAG, 
-  payload: tag,
-});
+}) as const;
 
 export const commentsLoading = (flag: boolean): ArticleAction => ({ 
   type: FETCH_COMMENTS_LOADING, 
   payload: flag,
-});
+}) as const;
 
 export const commentsError = (msg: string): ArticleAction => ({ 
   type: FETCH_COMMENTS_ERROR, 
   payload: msg,
-});
+}) as const;
 
 export const commentsSuccess = (data: CommentsData): ArticleAction => ({
   type: FETCH_COMMENTS,
   payload: data,
-});
+}) as const;
 
 export const favoriteFetching = (flag: boolean): ArticleAction => ({
   type: FAVORITE_ARTICLE_FETCHING,
   payload: flag,
-});
+}) as const;
 
 export const favoriteError = (msg: string): ArticleAction => ({
   type: FAVORITE_ARTICLE_ERROR,
   payload: msg,
-});
+}) as const;
 
 export const favoriteUpdate = (data: ArticleData): ArticleAction => ({
   type: FAVORITE_ARTICLE,
   payload: data,
-});
+}) as const;
 
 export const deleteArticle = (data: ArticleData): ArticleAction => ({
   type: DELETE_ARTICLE,
   payload: data,
-});
-
-
-// ASYNC ACTIONS
-
-async function fetchArticles(
-  service: Api, 
-  dispatch: Dispatch<ArticlesAction>, 
-  page: number = 1,
-  token: string
-) {
-  dispatch( articlesListLoading(true) );
-  try {
-    const data: ArticlesData = await service.getArticles(page, token);
-    dispatch( articlesListSuccess(data) );
-  } catch (err) {
-    dispatch( articlesListError(err.message) );
-  }
-}
-
-export function asyncGetArticles(page: number = 1, token: string) {
-  return (dispatch: Dispatch<ArticlesAction>) => {
-    fetchArticles(api, dispatch, page, token);
-  };
-}
+}) as const;
 
 
 async function fetchArticle(
@@ -232,7 +86,7 @@ async function fetchArticle(
 export function asyncGetArticle(slug: string, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchArticle(api, dispatch, slug, token);
-  };
+  }
 }
 
 
@@ -254,7 +108,7 @@ async function fetchComments(
 export function asyncGetComments(slug: string, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchComments(api, dispatch, slug, token);
-  };
+  }
 }
 
 
@@ -277,7 +131,7 @@ async function fetchFavorite(
 export function asyncSetFavorite(slug: string, flag: boolean, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchFavorite(api, dispatch, slug, flag, token);
-  };
+  }
 }
 
 
@@ -299,5 +153,5 @@ async function fetchDeleteArticle(
 export function asyncDeleteArticle(slug: string, token: string) {
   return (dispatch: Dispatch<ArticleAction>) => {
     fetchDeleteArticle(api, dispatch, slug, token);
-  };
+  }
 }

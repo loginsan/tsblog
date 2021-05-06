@@ -1,5 +1,3 @@
-import { Article, ArticleData, Tag } from '../types';
-import { ArticleAction } from './articlesActions';
 import {
   EDIT_ARTICLE_FETCHING,
   EDIT_ARTICLE_ERROR,
@@ -9,24 +7,19 @@ import {
   EDIT_TAG,
   REMOVE_TAG,
   CLEAR_EDIT,
-} from './constants';
+} from '../constants';
+import { Tag, EditState, ArticleData } from './types';
+import { ArticleAction } from '../single/types';
 
 
-export interface EditState {
-  loading: boolean,
-  error: string,
-  article: Article,
-  tagList: Tag[],
-}
-
-const zeroTag: Tag = { order: 0, text: '' };
+const defaultTag: Tag = { order: 0, text: '' };
 
 const initialState: EditState = {
   loading: false,
   error: '',
-  article: {},
-  tagList: [zeroTag],
-};
+  article: { title: '', description: '', body: '' },
+  tagList: [defaultTag],
+}
 
 export default function edit(
   state = initialState, 
@@ -38,7 +31,7 @@ export default function edit(
       return initialState;
     
     case INIT_TAGS: {
-      const data = (action.payload as string[]); // .filter(elem => elem !== '')
+      const data = (action.payload as string[]);
       return {
         ...state,
         tagList: data.map((tag, index) => ({ order: index, text: tag }))
@@ -77,24 +70,24 @@ export default function edit(
         ...state,
         error: '',
         loading: action.payload as boolean,
-      };
+      }
     
     case EDIT_ARTICLE_ERROR:
       return { 
         ...state, 
         error: action.payload as string,
         loading: false,
-      };
+      }
     
     case EDIT_ARTICLE_SUCCESS:
       return { 
         ...state, 
         loading: false,
         article: (action.payload as ArticleData).article,
-        tagList: [zeroTag],
-      };
+        tagList: [defaultTag],
+      }
 
     default:
       return state;
   }
-};
+}

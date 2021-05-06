@@ -2,10 +2,14 @@ import React, { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { asyncGetProfile, asyncGetAuthorArticles } from '../../store/profileActions';
-import { ProfileState } from '../../store/profileReducer';
-import { elemLoading, elemAlert } from '../../common';
+import cn from 'classnames';
+import {
+  asyncGetProfile,
+  asyncGetAuthorArticles
+} from '../../store/profile/actions';
+import { ProfileState } from '../../store/profile/types';
 import { Profile, Article } from '../../types';
+import { elemLoading, elemAlert, setPageTitle } from '../../common';
 
 
 interface ProfilesProps {
@@ -27,17 +31,21 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   const userToken = cookies.token || '';
   const label = "User: ";
 
+  setPageTitle(`User ${profile.username} profile`);
+
   useEffect(() => {
     dispatch( asyncGetProfile(username, userToken) );
-    dispatch( asyncGetAuthorArticles(username || '', userToken) );
+    if (username) {
+      dispatch( asyncGetAuthorArticles(username, userToken) );
+    }
   }, [dispatch, username, userToken]);
 
   const links: React.ReactNode[] = [];
   const original: string[] = [];
   for (let i = 0; i < list.length; i++) {
     const { slug, title } = list[i];
-    if ( !original.includes(title || '') ) {
-      original.push(title || '');
+    if ( !original.includes(title) ) {
+      original.push(title);
       links.push( (<li key={slug}>
         <Link to={`/articles/${slug}`}>{title}</Link>
       </li>) );
@@ -49,7 +57,7 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   const elemArticlesStat = !listLoading && !listError && (
     <div>
       <h3>Articles statistics</h3>
-      <p className="stats">
+      <p className={cn("stats")}>
         {`Total: ${total} | Original: ${hitsCount} | Coeff: ${coeff}`}
       </p>
     </div>
@@ -58,18 +66,18 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   const elemChosenArticles = !listLoading && !listError && hitsCount && (
     <div>
       <h3>Chosen Articles</h3>
-      <ul className="bullets no-bottom-margin">
+      <ul className={cn("bullets", "no-bottom-margin")}>
         { links }
       </ul>
     </div>
   );
 
   const elemProfile = !loading && !error && (
-    <article className="article article_full">
+    <article className={cn("article", "article_full")}>
       <h2><b>{ label }</b>{ profile.username }</h2>
-      <ul className="bullets">
-        <li className="long-text"><b>Bio: </b>{ profile.bio}</li>
-        <li className="long-text"><b>Image: </b>{ profile.image}</li>
+      <ul className={cn("bullets")}>
+        <li className={cn("long-text")}><b>Bio: </b>{ profile.bio}</li>
+        <li className={cn("long-text")}><b>Image: </b>{ profile.image}</li>
         <li><b>Following: </b>{ profile.following? 'yes' : 'no' }</li>
       </ul>
       <hr />
@@ -81,10 +89,8 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
     </article>
   );
 
-  
-
   return (
-    <section className="page">
+    <section className={cn("page")}>
       { elemLoading(loading) }
       { elemAlert(error) }
       { elemProfile }
@@ -92,14 +98,17 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
   );
 }
 
-const mapStateToProps = (state: {profile: ProfileState}) => ({
-  loading: state.profile.loading, 
-  error: state.profile.error,
-  profile: state.profile.profile,
-  listLoading: state.profile.listLoading,
-  listError: state.profile.listError,
-  list: state.profile.list,
-  total: state.profile.total,
-});
+const mapStateToProps = (state: {profile: ProfileState}) => {
+  const props = state.profile;
+  return {
+    loading: props.loading, 
+    error: props.error,
+    profile: props.profile,
+    listLoading: props.listLoading,
+    listError: props.listError,
+    list: props.list,
+    total: props.total,
+  }
+}
 
 export default connect(mapStateToProps, {})(Profiles);

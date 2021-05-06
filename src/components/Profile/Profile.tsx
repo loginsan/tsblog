@@ -6,9 +6,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useCookies } from 'react-cookie';
+import cn from 'classnames';
 
-import { mapUserStateToProps } from '../../store/userReducer';
-import { asyncUpdateProfile } from '../../store/userActions';
+import { mapUserStateToProps } from '../../store/user/reducer';
+import { asyncUpdateProfile } from '../../store/user/actions';
 import * as kit from '../../common';
 import { UserMenuProps } from '../../types';
 
@@ -55,14 +56,13 @@ const Profile: React.FC<UserMenuProps> = (props) => {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    setValue('username', user.username || '');
+    setValue('username', user.username);
     setValue('email', user.email || '');
-    setValue('bio', user.bio || '');
-    setValue('image', user.image || '');
+    setValue('bio', user.bio);
+    setValue('image', user.image);
   }, [user, setValue]);
 
   function onSubmit(data: FieldSet) {
-    // console.log(data);
     const userData: FieldSet = { 
       username: data.username, 
       email: data.email
@@ -92,7 +92,7 @@ const Profile: React.FC<UserMenuProps> = (props) => {
   }, [error, setError]);
 
   return (
-    <section className="form">
+    <section className={cn("form")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
       { !isLogged && !cookies.token && 
@@ -102,9 +102,9 @@ const Profile: React.FC<UserMenuProps> = (props) => {
         kit.notifyBox("Profile updated successfully", "Have a nice time in Realworld Blog!")
       }
       { isLogged && !submitted && (<>
-        <h2 className="form__title">Edit Profile</h2>
-        <form className="form__body" onSubmit={ handleSubmit(onSubmit) }>
-          <ul className="form__field-list nolist">
+        <h2 className={cn("form__title")}>Edit Profile</h2>
+        <form className={cn("form__body")} onSubmit={ handleSubmit(onSubmit) }>
+          <ul className={cn("form__field-list", "nolist")}>
             
             { kit.formInputField("username", "Username", errors.username, register("username")) }
             { kit.formInputField("email", "Email address", errors.email, register("email")) }
@@ -112,9 +112,9 @@ const Profile: React.FC<UserMenuProps> = (props) => {
             { kit.formTextAreaField("bio", "Bio", errors.bio, register("bio")) }
             { kit.formInputField("image", "Avatar image (url)", errors.image, register("image")) }
             
-            <li className="form__field">
-              <button type="submit" className="btn_submit">Save</button>
-              <span className="note_foot">
+            <li className={cn("form__field")}>
+              <button type="submit" className={cn("btn_submit")}>Save</button>
+              <span className={cn("note_foot")}>
                 * Editing profile <Link to={`/profiles/${user.username}`}>{ user.username }</Link> …
               </span>
             </li>
@@ -124,6 +124,6 @@ const Profile: React.FC<UserMenuProps> = (props) => {
       }
     </section>
   )
-};
+}
 
 export default connect(mapUserStateToProps, {})(Profile);

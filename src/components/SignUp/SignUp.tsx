@@ -46,6 +46,7 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
   const { loading, error, user, isLogged } = props;
   const dispatch = useDispatch();
   const [enabledSubmit, setEnabledSubmit] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const history = useHistory();
 
   function toggleEnable() {
@@ -73,8 +74,14 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
   }, [error, setError]);
 
   useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
     if (isLogged) {
-      setTimeout(() => { history.push(`/`) }, 3000);
+      timerId = setTimeout(() => { history.push(`/`) }, 3000);
+    }
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
     }
   }, [isLogged, history]);
 
@@ -85,17 +92,18 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
       password: data.password,
     };
     dispatch( asyncRegister(userData) );
+    setSubmitted(true);
   }
 
   return (
     <section className={cn("form")}>
       { kit.elemLoading(loading) }
       { kit.elemAlert(error) }
-      { !loading && !error && isLogged
+      { !loading && !error && submitted
         ? (<>
             <h2>{`Welcome, ${user.username}!`}</h2>
-            <p className={cn("long-text")}>Have a nice time in Realworld Blog! You will be redirected to 
-            <Link to="/">articles page</Link> …</p>
+            <p className={cn("long-text", "no-bottom-margin")}>Have a nice time in Realworld Blog!<br /> 
+            You will be redirected to <Link to="/">articles page</Link> …</p>
           </>)
         : (<>
             <h2 className={cn("form__title")}>Create new account</h2>
@@ -133,7 +141,7 @@ const SignUp: React.FC<UserMenuProps> = (props) => {
           </>
         )
       }
-  </section>
+    </section>
   )
 }
 

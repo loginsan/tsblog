@@ -83,7 +83,7 @@ export interface UserMenuProps extends BasicProps {
 }
 
 export interface ArticleFormProps extends BasicProps {
-  article: ArticleCore,
+  article: Article,
   slug: string,
   formTitle: string,
   tagList: Tag[],

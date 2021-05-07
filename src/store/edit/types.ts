@@ -3,7 +3,7 @@ import { ArticleCore, Article, ArticleData, Tag, PostArticle } from '../../types
 export interface EditState {
   loading: boolean,
   error: string,
-  article: ArticleCore,
+  article: Article,
   tagList: Tag[],
 }
 

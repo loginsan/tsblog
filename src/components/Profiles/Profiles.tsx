@@ -56,19 +56,23 @@ const Profiles: React.FC<ProfilesProps> = (props) => {
 
   const elemArticlesStat = !listLoading && !listError && (
     <div>
-      <h3>Articles statistics</h3>
+      <h3><b>Articles statistics</b></h3>
       <p className={cn("stats")}>
         {`Total: ${total} | Original: ${hitsCount} | Coeff: ${coeff}`}
       </p>
     </div>
   );
 
-  const elemChosenArticles = !listLoading && !listError && hitsCount && (
+  const elemChosenArticles = !listLoading && !listError && (hitsCount >= 0) &&
+  (
     <div>
-      <h3>Chosen Articles</h3>
-      <ul className={cn("bullets", "no-bottom-margin")}>
-        { links }
-      </ul>
+      <h3><b>Chosen Articles</b></h3>
+      { hitsCount > 0 ? (<ul className={cn("bullets", "no-bottom-margin")}>
+          { links }
+        </ul>) : (<p className={cn("long-text")}>
+          Author has no published articles yet…
+        </p>) 
+      }
     </div>
   );
 

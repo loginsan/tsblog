@@ -37,7 +37,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
       </Link>
       <Link to="/profile" className={cn("link", "link_edit-profile")} title="Edit profile">
         { user.username } 
-        <img src={ user.image } title={ user.bio } 
+        <img src={ user.image || '' } title={ user.bio } 
           alt="Avatar" className={cn("avatar")}
           onError={ avatarFallback }
         />

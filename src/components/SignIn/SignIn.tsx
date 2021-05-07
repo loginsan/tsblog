@@ -69,8 +69,16 @@ const SignIn: React.FC<UserMenuProps> = (props) => {
   }, [error, setError]);
 
   useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout>;
     if (isLogged) {
-      setTimeout(() => { history.push(`/profiles/${user.username}`) }, 3000);
+      timerId = setTimeout(() => {
+        history.push(`/profiles/${user.username}`);        
+      }, 3000);
+    }
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
     }
   }, [isLogged, history, user.username]);
 

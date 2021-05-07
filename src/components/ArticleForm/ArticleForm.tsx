@@ -90,7 +90,7 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
   const [cookies] = useCookies(['token']);
   const userToken = cookies.token || '';
 
-  kit.setPageTitle(formTitle);
+  kit.setPageTitle(`${formTitle} ${article.title}`);
 
   const { 
     register, 
@@ -175,11 +175,8 @@ const ArticleForm: React.FC<ArticleFormProps> = (props) => {
 
       { submitted &&
         kit.notifyBox("Form submitted successfully",
-          slug? (<>You can now&nbsp;
-            <Link to={`/articles/${slug}`}>view the article</Link>
-          </>) : (<>You can now&nbsp;
-            <Link to="/articles/">view articles</Link> 
-            {original && original.slug? original.slug : '-'}
+          (<>You can now&nbsp;
+            <Link to={`/articles/${article.slug}`}>view the article</Link>
           </>)
         )
       }

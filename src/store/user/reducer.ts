@@ -60,6 +60,7 @@ export default function user(
         ...state,
         loading: false,
         user: (action.payload as UserData).user,
+        isLogged: true,
       }
     
     case GET_CURRENT_USER:
